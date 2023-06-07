@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Marketplace - OpenAPI 3.0
+  description: >-
+    Sample Marketplace 
+  version: 1.0.0
+servers:
+  - url: http://localhost:4001/v1
+tags:
+  - name: product
+    description: Operations about product
+paths:
+  /products:
+    post:
+      tags:
+        - product
+      summary: Creates product
+      operationId: createProduct
+      requestBody:
+        description: Creates product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreationInput'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+components:
+  schemas:
+    ProductCreationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Banana
+    ApiResponseError:
+      type: object
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+          example: false    
+    ApiResponseSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        success:
+          type: boolean
+          example: true
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: header
+      name: session 
+security:
+  - cookieAuth: []

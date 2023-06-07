@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  catalog-service:
+    env_file:
+      - ./back-end/catalog-service/.env.docker
+    build:
+      context: back-end/catalog-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/catalog-service/:/app
+    ports:
+      - 4001:4001
+      - 2346:2345
+  postgres:
+    container_name: marketplace_postgres_container
+    image: postgres
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/marketplace/postgres
+    ports:
+      - "5437:5432"
+    restart: unless-stopped
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+    - "4333:8080"
+    environment:
+      SWAGGER_JSON: /tmp/open-api.yaml
+    volumes:
+      - ./back-end:/tmp:rw,delegated
+    restart: always
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    ports:
+    - "4444:8080"
+    environment:
+      SWAGGER_FILE: /tmp/open-api.yaml
+    volumes:
+      - ./back-end:/tmp:rw,delegated
+    restart: always
+volumes:
+  postgres:

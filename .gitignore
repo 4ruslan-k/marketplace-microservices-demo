@@ -1,0 +1,6 @@
+.next
+tmp/
+coverage.out
+bin/
+.env
+.env.docker

@@ -1,0 +1,11 @@
+app:
+  name: 'fakedata-api-catalog_service'
+  version: '0.0.1'
+frontend_url: http://localhost:3000
+gateway_url: http://localhost:4001
+http:
+  port: 4002
+open_telemetry:
+  is_enabled: false
+  is_insecure: true
+  collector_url: localhost:4317
