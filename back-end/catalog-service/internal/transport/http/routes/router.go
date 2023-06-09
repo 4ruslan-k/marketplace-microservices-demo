@@ -34,4 +34,7 @@ func NewRouter(
 
 	// products
 	v1.POST("/products", r.CreateProduct)
+	v1.GET("/products", r.GetProducts)
+	v1.GET("/products/:productID", r.GetProductByID)
+	v1.DELETE("/products/:productID", r.DeleteProductByID)
 }

@@ -32,13 +32,13 @@ func NewProduct(createProductParams CreateProductParams) (Product, error) {
 	return product, nil
 }
 
-func NewProductFromDatabase(id, name string) (Product, error) {
+func NewProductFromDatabase(id, name string) Product {
 	product := Product{
 		id:   id,
 		name: name,
 	}
 
-	return product, nil
+	return product
 }
 
 func (p Product) ID() string {

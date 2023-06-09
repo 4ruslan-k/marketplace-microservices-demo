@@ -6,5 +6,8 @@ import (
 )
 
 type ProductRepository interface {
-	Save(ctx context.Context, product productEntity.Product) error
+	SaveProduct(ctx context.Context, product productEntity.Product) error
+	GetProducts(ctx context.Context) ([]productEntity.Product, error)
+	GetProductByID(ctx context.Context, productID string) (productEntity.Product, error)
+	DeleteProductByID(ctx context.Context, productID string) error
 }

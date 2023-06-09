@@ -17,7 +17,7 @@ paths:
       summary: Creates product
       operationId: createProduct
       requestBody:
-        description: Creates product
+        description: Creates a product
         content:
           application/json:
             schema:
@@ -29,6 +29,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseSuccess'
+    get:
+      tags:
+        - product
+      summary: Feches a product list
+      operationId: fetchProductList
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+  /products/:productId:
+    get:
+      tags:
+        - product
+      summary: Fetches a product
+      operationId: fetchProduct
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
 components:
   schemas:
     ProductCreationInput:
@@ -37,6 +62,25 @@ components:
         name:
           type: string
           example: Banana
+    Product:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+          example: Banana
+    ProductList:
+      type: object
+      properties:
+        type:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
     ApiResponseError:
       type: object
       properties:

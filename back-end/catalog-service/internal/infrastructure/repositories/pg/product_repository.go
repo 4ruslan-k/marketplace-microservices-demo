@@ -4,6 +4,8 @@ import (
 	productEntity "catalog_service/internal/domain/entities/product"
 	"catalog_service/internal/ports/repositories"
 	"context"
+	"database/sql"
+	"fmt"
 
 	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
@@ -23,17 +25,14 @@ type productPGRepository struct {
 	logger zerolog.Logger
 }
 
-func toEntity(p ProductModel) (productEntity.Product, error) {
+func (p ProductModel) toEntity() productEntity.Product {
 
-	product, err := productEntity.NewProductFromDatabase(
+	product := productEntity.NewProductFromDatabase(
 		p.ID,
 		p.Name,
 	)
-	if err != nil {
-		return productEntity.Product{}, err
-	}
 
-	return product, nil
+	return product
 }
 
 func toDB(u productEntity.Product) (ProductModel, error) {
@@ -47,7 +46,7 @@ func NewProductRepository(sql *bun.DB, logger zerolog.Logger) *productPGReposito
 	return &productPGRepository{sql, logger}
 }
 
-func (r *productPGRepository) Save(ctx context.Context, u productEntity.Product) error {
+func (r *productPGRepository) SaveProduct(ctx context.Context, u productEntity.Product) error {
 	dbProduct, err := toDB(u)
 	if err != nil {
 		return err
@@ -56,5 +55,60 @@ func (r *productPGRepository) Save(ctx context.Context, u productEntity.Product)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *productPGRepository) GetProducts(ctx context.Context) ([]productEntity.Product, error) {
+	productModels := make([]ProductModel, 0)
+	err := r.db.NewSelect().
+		Model(&productModels).
+		Scan(ctx)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("productRepo -> GetProducts -> r.db.NewSelect(): %w", err)
+	}
+
+	products := make([]productEntity.Product, 0, len(productModels))
+	for _, productModel := range productModels {
+		productEntity := productModel.toEntity()
+
+		products = append(products, productEntity)
+	}
+
+	return products, nil
+}
+
+func (r *productPGRepository) GetProductByID(ctx context.Context, productID string) (productEntity.Product, error) {
+	var productDB ProductModel
+	err := r.db.NewSelect().
+		Model(&productDB).
+		Where("id IN (?)", productID).
+		Scan(ctx)
+
+	if err == sql.ErrNoRows {
+		return productEntity.Product{}, nil
+	}
+
+	if err != nil {
+		return productEntity.Product{}, fmt.Errorf("productPGRepository -> GetProductByID -> r.db.NewSelect(): %w", err)
+	}
+
+	product := productDB.toEntity()
+	if err != nil {
+		return product, fmt.Errorf("productPGRepository -> GetByID -> toEntity: %w", err)
+	}
+	return product, nil
+}
+
+func (r *productPGRepository) DeleteProductByID(ctx context.Context, productID string) error {
+	var product ProductModel
+	_, err := r.db.NewDelete().Model(&product).Where("id = ?", productID).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("productPGRepository DeleteProductByID -> NewDelete: %w", err)
+	}
+
 	return nil
 }
