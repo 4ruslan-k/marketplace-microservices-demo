@@ -39,7 +39,7 @@ func NewUserApplicationService(
 }
 
 func (u userApplicationService) GetCurrentUser(headers http.Header) (User, string, error) {
-	req, err := http.NewRequest("GET", u.config.UserServiceURL+"/v1/users/me/internal", nil)
+	req, err := http.NewRequest("GET", u.config.AuthenticationServiceURL+"/v1/users/me/internal", nil)
 	if err != nil {
 		return User{}, "", err
 	}

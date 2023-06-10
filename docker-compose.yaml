@@ -24,6 +24,40 @@ services:
     ports:
       - 4002:4002
       - 2346:2345
+  authentication-service:
+    env_file:
+      - ./back-end/authentication-service/.env.docker
+    build:
+      context: back-end/authentication-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/authentication-service/:/app
+    ports:
+      - 4003:4003
+      - 2348:2345
+    depends_on:
+      - mongodb
+      - nats
+  nats:
+    image: nats:latest
+    entrypoint: ["/nats-server", "-js"]
+    ports:
+    - "4222:4222"
+    - "8222:8222"
+    - "6222:6222"
+    restart: always
+    tty: true
+  mongodb:
+    container_name: marketplace-mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/marketplace/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: db    
   postgres:
     container_name: marketplace_postgres_container
     image: postgres
@@ -56,6 +90,7 @@ services:
       - ./back-end:/tmp:rw,delegated
     restart: always
   redis:
+    container_name: marketplace_redis
     image: redis:latest
     ports:
       - 6379:6379
@@ -65,3 +100,4 @@ services:
 volumes:
   postgres:
   redis-data:
+  mongodbdata:

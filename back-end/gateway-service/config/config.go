@@ -12,14 +12,14 @@ import (
 
 type (
 	Config struct {
-		App                 `yaml:"app"`
-		HTTP                `yaml:"http"`
-		FontendURL          string `yaml:"frontend_url" env:"FRONTEND_URL" validate:"required"`
-		CatalogServiceURL   string `yaml:"catalog_service_url" env:"CATALOG_SERVICE_URL" validate:"required"`
-		UserServiceURL      string `yaml:"user_service_url" env:"USER_SERVICE_URL" validate:"required"`
-		SwaggerUIDomain     string `yaml:"swagger_ui_domain"`
-		SwaggerEditorDomain string `yaml:"swagger_editor_domain"`
-		RedisAddress        string `yaml:"redis_address" env:"REDIS_ADDRESS" validate:"required"`
+		App                      `yaml:"app"`
+		HTTP                     `yaml:"http"`
+		FontendURL               string `yaml:"frontend_url" env:"FRONTEND_URL" validate:"required"`
+		CatalogServiceURL        string `yaml:"catalog_service_url" env:"CATALOG_SERVICE_URL" validate:"required"`
+		AuthenticationServiceURL string `yaml:"authentication_service_url" env:"authentication_service_url" validate:"required"`
+		SwaggerUIDomain          string `yaml:"swagger_ui_domain"`
+		SwaggerEditorDomain      string `yaml:"swagger_editor_domain"`
+		RedisAddress             string `yaml:"redis_address" env:"REDIS_ADDRESS" validate:"required"`
 	}
 	App struct {
 		Name    string `yaml:"name" validate:"required"`

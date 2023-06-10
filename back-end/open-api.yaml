@@ -7,9 +7,243 @@ info:
 servers:
   - url: http://localhost:4001/v1
 tags:
+  - name: user
+    description: Operations about user
+  - name: auth
+    description: Operations about authentication
   - name: product
     description: Operations about product
 paths:
+  /users:
+    post:
+      tags:
+        - user
+      summary: Creates user
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationInput'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+  /users/{userId}:
+    patch:
+      tags:
+        - user
+      summary: Updates user
+      operationId: updateUser
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the user to update
+      requestBody:
+        description: Fields to update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:          
+                  type: string 
+                  example: Sam Smith
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+    delete:
+      tags:
+        - user
+      summary: Deletes user
+      operationId: updateUser
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the user to delete
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+  /users/me:
+    get:
+      tags:
+        - user
+      summary: Gets logged in user
+      description: ''
+      operationId: getUser
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' 
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Logs user into the system with username and password
+      description: ''
+      operationId: loginUser
+      security: []
+      requestBody:
+        description: user credentials
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:          
+                  type: string 
+                  example: example@gmail.com
+                password:          
+                  type: string 
+                  example: yourStrongPassword123^#@$6!
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          headers: 
+            Set-Cookie:
+              schema: 
+                type: string
+                example: session=abcde12345; Path=/; HttpOnly
+        '400':
+          description: Invalid username/password supplied
+  /auth/login/mfa/totp:
+    post:
+      tags:
+        - auth
+      summary: Logs user into the system with TOTP code
+      description: ''
+      operationId: loginUserTotp
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotpLogin'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+  /auth/me/mfa/totp:
+    put:
+      tags:
+        - auth
+      summary: Generates TOTP setup
+      description: ''
+      operationId: generateTotp
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotpLogin'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotpSetup'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'                
+  /auth/me/mfa/totp/enable:
+    patch:
+      tags:
+        - auth
+      summary: Enables TOTP MFA
+      description: ''
+      operationId: enableTotp
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:          
+                  $ref: '#/components/schemas/MfaCode' 
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'                     
+                
+  /auth/me/mfa/totp/disable:
+    patch:
+      tags:
+        - auth
+      summary: Disables TOTP MFA
+      description: ''
+      operationId: disableTotp
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:          
+                  $ref: '#/components/schemas/MfaCode' 
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'   
   /products:
     post:
       tags:
@@ -56,6 +290,56 @@ paths:
                 $ref: '#/components/schemas/Product'
 components:
   schemas:
+    User:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 8f6df64a-9036-4483-b483-4e97c0ea89fb
+        name:
+          type: string
+          example: John Smith
+        email:
+          type: string
+          example: example@gmail.com
+    UserResponse:
+      type: object
+      properties:
+        user:
+            $ref: '#/components/schemas/User' 
+    UserRegistrationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Smith
+        email:
+          type: string
+          example: example@gmail.com
+        password:
+          type: string
+          example: yourStrongPassword2353256@!#
+    TotpLogin:
+      type: object
+      properties:
+        code:
+            $ref: '#/components/schemas/MfaCode' 
+        tokenId:
+          type: string
+          example: f44FD9T4hhg_cILA<ibJXclCJOsERr`Np7waVJNYSwTYW%6yXw:QOEABbiTDnTTX|aDLhdSDrOlXoKPdu5Tpd3K01pJIfD3wh}VQ#Ar=
+    TotpSetup:
+      type: object
+      properties:
+        totpSetup:
+          type: object
+          properties:
+            image:
+              type: string
+    MfaCode:
+      type: string
+      example: 563674
     ProductCreationInput:
       type: object
       properties:
