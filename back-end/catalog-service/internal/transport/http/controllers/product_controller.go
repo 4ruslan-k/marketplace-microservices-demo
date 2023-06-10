@@ -42,13 +42,14 @@ func (h *ProductController) CreateProduct(c *gin.Context) {
 
 	err := h.ApplicationService.CreateProduct(
 		c.Request.Context(),
-		productEntity.CreateProductParams{Name: createProductInput.Name},
+		productEntity.CreateProductParams{Name: createProductInput.Name, Price: createProductInput.Price},
 	)
 
 	if err != nil {
 		httpErrors.RespondWithError(c, err)
 		return
 	}
+	// TODO: return created product
 	dto.HandleOkResponse(c)
 }
 

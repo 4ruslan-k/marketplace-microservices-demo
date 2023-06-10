@@ -16,8 +16,10 @@ var _ repositories.ProductRepository = (*productPGRepository)(nil)
 type ProductModel struct {
 	bun.BaseModel `bun:"table:products,alias:p"`
 
-	ID   string `bun:"id"`
-	Name string `bun:"name"`
+	ID       string  `bun:"id"`
+	Name     string  `bun:"name"`
+	Price    float64 `bun:"price"`
+	Quantity int     `bun:"quantity"`
 }
 
 type productPGRepository struct {
@@ -30,15 +32,18 @@ func (p ProductModel) toEntity() productEntity.Product {
 	product := productEntity.NewProductFromDatabase(
 		p.ID,
 		p.Name,
+		p.Price,
+		p.Quantity,
 	)
 
 	return product
 }
 
-func toDB(u productEntity.Product) (ProductModel, error) {
+func toDB(p productEntity.Product) (ProductModel, error) {
 	return ProductModel{
-		ID:   u.ID(),
-		Name: u.Name(),
+		ID:    p.ID(),
+		Name:  p.Name(),
+		Price: p.Price(),
 	}, nil
 }
 

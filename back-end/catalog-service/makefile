@@ -43,13 +43,8 @@ migrate_down: # rollback the last migration group
 	@cd ./migrate && \
 	BUNDEBUG=2 ENV_FILE_PATH=$(ENV_FILE_PATH) go run . db rollback
 
-.PHONY: migrate_create_go
-migrate_create_go: # create Go migration. Example: migrate_create_go name=new_migration_name
-	@cd ./migrate && \
-	BUNDEBUG=2 ENV_FILE_PATH=$(ENV_FILE_PATH) go run . db create_go $(name)
-
-.PHONY: migrate_create_sql
-migrate_create_sql: # create up and down SQL migrations. Example: migrate_create_sql name=new_migration_name
+.PHONY: migrate_create
+migrate_create: # create up and down SQL migrations. Example: migrate_create_sql name=new_migration_name
 	@cd ./migrate && \
 	BUNDEBUG=2 ENV_FILE_PATH=$(ENV_FILE_PATH) go run . db create_sql $(name)
 
