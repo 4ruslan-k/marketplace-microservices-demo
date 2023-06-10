@@ -13,6 +13,8 @@ tags:
     description: Operations about authentication
   - name: product
     description: Operations about product
+  - name: notification
+    description: Operations about notifications
 paths:
   /users:
     post:
@@ -288,6 +290,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+  /users/me/notifications:
+    get:
+      tags:
+        - notification
+      summary: Gets notifications by user
+      description: ''
+      operationId: getNotificationsByUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotification'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'  
+  /users/me/notifications/view:
+    patch:
+      tags:
+        - notification
+      summary: View all notifications
+      description: ''
+      operationId: viewAllNotifications
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError' 
+  /users/me/notifications/{notificationId}/view:
+    patch:
+      tags:
+        - notification
+      summary: View notification by id
+      description: ''
+      operationId: viewNotificationById
+      parameters:
+        - in: path
+          name: notificationId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID of the notification to view
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'  
 components:
   schemas:
     User:
@@ -393,6 +463,22 @@ components:
         success:
           type: boolean
           example: true
+    UserNotification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        message:
+          type: string
+        notificationType:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: 2023-04-15T05:44:37.596Z
   securitySchemes:
     cookieAuth:
       type: apiKey

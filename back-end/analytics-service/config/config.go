@@ -51,12 +51,6 @@ func NewConfig() (*Config, error) {
 	cfg := &Config{}
 	err = yaml.Unmarshal(config, cfg)
 
-	fmt.Println("cfg", cfg)
-	fmt.Println("cfg", cfg)
-	fmt.Println("cfg", cfg)
-	fmt.Println("cfg", cfg)
-	fmt.Println("cfg", cfg)
-	fmt.Println("cfg", cfg)
 	if err != nil {
 		return nil, fmt.Errorf("config error: %w", err)
 	}

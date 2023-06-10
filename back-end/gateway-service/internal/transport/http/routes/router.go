@@ -26,12 +26,24 @@ func NewRouter(
 	handler.Use(gin.Recovery())
 	handler.Use(requestid.New())
 	handler.Use(m.GetAuthenticationInfo.Apply)
-	handler.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
-
-	corsConfig := cors.DefaultConfig()
+	handler.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	authenticate := m.RequireAuthentication.Apply
 
+	notificationServiceURL := config.NotificationServiceURL
+	notifProxy := controllers.ReverseProxy(notificationServiceURL)
+
+	authServiceURL := config.AuthenticationServiceURL
+	authServiceProxy := controllers.ReverseProxy(authServiceURL)
+
+	catalogServiceURL := config.CatalogServiceURL
+	catalogServiceProxy := controllers.ReverseProxy(catalogServiceURL)
+
+	// declare before CORS
+	handler.GET("/socket.io/*any", authenticate, notifProxy)
+	handler.POST("/socket.io/*any", authenticate, notifProxy)
+
+	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{config.FontendURL, config.SwaggerEditorDomain, config.SwaggerUIDomain}
 	corsConfig.AllowCredentials = true
 
@@ -39,12 +51,6 @@ func NewRouter(
 	v1 := handler.Group("/v1")
 
 	rateLimit := m.RateLimiter.Apply
-
-	AuthServiceURL := config.AuthenticationServiceURL
-	authServiceProxy := controllers.ReverseProxy(AuthServiceURL)
-
-	catalogServiceURL := config.CatalogServiceURL
-	catalogServiceProxy := controllers.ReverseProxy(catalogServiceURL)
 
 	// users
 	v1.POST("users", authServiceProxy)
@@ -65,6 +71,12 @@ func NewRouter(
 	// auth/social
 	v1.GET("/auth/social/:provider/callback", rateLimit(10), authServiceProxy)
 	v1.GET("/auth/social/:provider", rateLimit(10), authServiceProxy)
+
+	// user notifications
+	v1.GET("/users/me/notifications", authenticate, notifProxy)
+	v1.PATCH("/users/me/notifications/view", authenticate, notifProxy)
+	v1.DELETE("/users/me/notifications/:notificationId", authenticate, notifProxy)
+	v1.PATCH("/users/me/notifications/:notificationId/view", authenticate, notifProxy)
 
 	// products
 	v1.POST("/products", authenticate, catalogServiceProxy)

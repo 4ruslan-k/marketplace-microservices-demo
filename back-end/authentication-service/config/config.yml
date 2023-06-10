@@ -6,10 +6,6 @@ project_root: ${PROJECT_ROOT}
 gateway_url: ${GATEWAY_URL}
 http:
   port: ${PORT}
-open_telemetry:
-  is_enabled: false
-  is_insecure: true
-  collector_url: localhost:4317
 session_secret: ${SESSION_SECRET}
 social_sign_in:
   github_key: ${GITHUB_KEY}

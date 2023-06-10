@@ -5,19 +5,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
-	"authentication_service/config"
 )
 
 func Run() {
-	_, err := config.NewConfig()
-	if err != nil {
-		log.Fatal().Err(err).Msg("config.NewConfig")
-	}
-
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	// TODO: defer mongodb
 	httpServer, err := buildDependencies()

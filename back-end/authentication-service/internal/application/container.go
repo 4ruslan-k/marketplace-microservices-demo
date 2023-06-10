@@ -19,6 +19,8 @@ import (
 )
 
 func buildDependencies() (*httpserver.Server, error) {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
 	logger := zerolog.New(os.Stdout)
 
 	config, err := config.NewConfig()

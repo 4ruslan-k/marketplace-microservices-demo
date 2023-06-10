@@ -17,6 +17,7 @@ type (
 		FontendURL               string `yaml:"frontend_url"  validate:"required"`
 		CatalogServiceURL        string `yaml:"catalog_service_url" validate:"required"`
 		AuthenticationServiceURL string `yaml:"authentication_service_url" validate:"required"`
+		NotificationServiceURL   string `yaml:"notification_service_url" validate:"required"`
 		SwaggerUIDomain          string `yaml:"swagger_ui_domain"`
 		SwaggerEditorDomain      string `yaml:"swagger_editor_domain"`
 		RedisAddress             string `yaml:"redis_address" validate:"required"`

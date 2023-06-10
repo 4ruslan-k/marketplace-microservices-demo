@@ -52,6 +52,21 @@ services:
     depends_on:
       - nats
       - postgres
+  notification-service:
+    env_file:
+    - ./back-end/notification-service/.env.docker
+    build:
+      context: back-end/notification-service/
+      dockerfile: Dockerfile.dev
+    environment:
+      - ./back-end/notification-service/:/app
+    volumes:
+      - ./back-end/notification-service/:/app:rw,delegated
+    ports:
+      - 4005:4005
+    depends_on:
+      - nats
+      - postgres
   nats:
     image: nats:latest
     entrypoint: ["/nats-server", "-js"]

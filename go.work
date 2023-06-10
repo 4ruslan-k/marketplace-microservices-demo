@@ -5,4 +5,5 @@ use (
 	./back-end/gateway-service
 	./back-end/authentication-service
 	./back-end/analytics-service
+	./back-end/notification-service
 )

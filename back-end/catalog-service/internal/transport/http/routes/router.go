@@ -18,7 +18,7 @@ func NewRouter(
 ) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
-	handler.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
+	handler.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	r := controllers.NewProductController(u, logger, config)
 

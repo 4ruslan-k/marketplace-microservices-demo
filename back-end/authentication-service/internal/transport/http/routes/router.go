@@ -23,7 +23,7 @@ func NewRouter(
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.Use(m.Session.Apply)
-	handler.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })
+	handler.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	controllers.SetupSocialLogin(mb, config)
 	r := controllers.NewUserControllers(u, logger, config)

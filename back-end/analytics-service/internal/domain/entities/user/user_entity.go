@@ -13,7 +13,6 @@ type User struct {
 	id        string
 	name      string
 	email     string
-	password  string
 	createdAt time.Time
 	updatedAt time.Time
 }

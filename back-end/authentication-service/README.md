@@ -2,6 +2,8 @@
 # install air `https://github.com/cosmtrek/air`
 # run project using `air` command
 
+# create "notifications", "users" NATS streams
+
 # install dependencies `make install`
 
 # install dev tools `make install-tools`

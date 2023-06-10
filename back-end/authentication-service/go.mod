@@ -1,6 +1,6 @@
 module authentication_service
 
-go 1.18
+go 1.20
 
 require (
 	github.com/docker/go-connections v0.4.0
