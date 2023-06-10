@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func NewRouter(
@@ -17,7 +16,6 @@ func NewRouter(
 	logger zerolog.Logger,
 	config *config.Config,
 ) {
-	handler.Use(otelgin.Middleware(config.App.Name))
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.GET("/healthz", func(c *gin.Context) { c.Status(http.StatusOK) })

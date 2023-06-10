@@ -1,0 +1,9 @@
+app:
+  name: 'fakedata-api-analytics_service'
+  version: '0.0.1'
+http:
+  port: '4003'
+open_telemetry:
+  is_enabled: false
+  is_insecure: true
+  collector_url: localhost:4317

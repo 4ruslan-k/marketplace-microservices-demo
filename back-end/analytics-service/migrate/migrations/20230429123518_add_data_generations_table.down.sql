@@ -1,0 +1,1 @@
+DROP TABLE IF  EXISTS data_generation_by_users;

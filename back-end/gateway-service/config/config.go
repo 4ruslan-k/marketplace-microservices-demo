@@ -14,12 +14,12 @@ type (
 	Config struct {
 		App                      `yaml:"app"`
 		HTTP                     `yaml:"http"`
-		FontendURL               string `yaml:"frontend_url" env:"FRONTEND_URL" validate:"required"`
-		CatalogServiceURL        string `yaml:"catalog_service_url" env:"CATALOG_SERVICE_URL" validate:"required"`
-		AuthenticationServiceURL string `yaml:"authentication_service_url" env:"authentication_service_url" validate:"required"`
+		FontendURL               string `yaml:"frontend_url"  validate:"required"`
+		CatalogServiceURL        string `yaml:"catalog_service_url" validate:"required"`
+		AuthenticationServiceURL string `yaml:"authentication_service_url" validate:"required"`
 		SwaggerUIDomain          string `yaml:"swagger_ui_domain"`
 		SwaggerEditorDomain      string `yaml:"swagger_editor_domain"`
-		RedisAddress             string `yaml:"redis_address" env:"REDIS_ADDRESS" validate:"required"`
+		RedisAddress             string `yaml:"redis_address" validate:"required"`
 	}
 	App struct {
 		Name    string `yaml:"name" validate:"required"`
@@ -46,7 +46,6 @@ func NewConfig() (*Config, error) {
 	godotenv.Load(envFilePath)
 	projectRoot := os.Getenv("PROJECT_ROOT")
 	config, err := ioutil.ReadFile(projectRoot + "/config/config.yml")
-
 	if err != nil {
 		return nil, fmt.Errorf("config error: %w", err)
 	}

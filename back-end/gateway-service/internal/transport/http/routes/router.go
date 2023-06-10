@@ -11,7 +11,6 @@ import (
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	controllers "gateway/internal/transport/http/controllers"
 )
@@ -23,7 +22,6 @@ func NewRouter(
 	logger zerolog.Logger,
 	config *config.Config,
 ) {
-	handler.Use(otelgin.Middleware(config.App.Name))
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.Use(requestid.New())

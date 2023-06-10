@@ -52,7 +52,25 @@
                     "to": "/app/",
                 },
             ],
-            "port": 2347,
+            "port": 2348,
+            "host": "127.0.0.1",
+            "showLog": true,
+            "apiVersion": 2,
+            "trace": "verbose"
+        },
+        {
+            "name": "analytics-service - Delve into  Docker",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "debugAdapter": "dlv-dap",
+            "substitutePath": [
+                {
+                    "from": "${workspaceFolder}/back-end/analytics-service",
+                    "to": "/app/",
+                },
+            ],
+            "port": 2349,
             "host": "127.0.0.1",
             "showLog": true,
             "apiVersion": 2,

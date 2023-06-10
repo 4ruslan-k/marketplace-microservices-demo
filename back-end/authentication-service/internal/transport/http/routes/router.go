@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func NewRouter(
@@ -21,7 +20,6 @@ func NewRouter(
 	config *config.Config,
 	mb *mongo.Database,
 ) {
-	handler.Use(otelgin.Middleware(config.App.Name))
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.Use(m.Session.Apply)

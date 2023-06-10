@@ -42,7 +42,6 @@ func (c Config) Validate() error {
 
 func NewConfig() (*Config, error) {
 	envFilePath := os.Getenv("ENV_FILE_PATH")
-
 	godotenv.Load(envFilePath)
 	projectRoot := os.Getenv("PROJECT_ROOT")
 	config, err := ioutil.ReadFile(projectRoot + "/config/config.yml")

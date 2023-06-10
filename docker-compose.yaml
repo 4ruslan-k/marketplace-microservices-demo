@@ -38,6 +38,20 @@ services:
     depends_on:
       - mongodb
       - nats
+  analytics-service:
+    env_file:
+    - ./back-end/analytics-service/.env.docker
+    build:
+      context: back-end/analytics-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/analytics-service/:/app:rw,delegated
+    ports:
+      - 4004:4004
+      - 2349:2345
+    depends_on:
+      - nats
+      - postgres
   nats:
     image: nats:latest
     entrypoint: ["/nats-server", "-js"]

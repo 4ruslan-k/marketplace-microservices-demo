@@ -1,0 +1,7 @@
+app:
+  name: analytics_service'
+  version: '0.0.1'
+pg_dsn: ${PG_SDN}
+project_root: ${PROJECT_ROOT}
+http:
+  port: ${PORT}
