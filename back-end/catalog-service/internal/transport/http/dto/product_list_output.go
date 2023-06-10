@@ -8,7 +8,7 @@ type ProductListOutput struct {
 }
 
 func NewProductListOutputFromEntities(products []product.Product) ProductListOutput {
-	var productOutputList []ProductOutput
+	productOutputList := make([]ProductOutput, len(products))
 	for _, product := range products {
 		productOutputList = append(productOutputList, NewProductOutputFromEntity(product))
 	}

@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 
+	customErrors "catalog_service/pkg/errors"
+
 	"github.com/rs/zerolog"
 )
 
@@ -66,6 +68,9 @@ func (u productApplicationService) GetProductByID(
 	productID string,
 ) (productEntity.Product, error) {
 	product, err := u.productRepository.GetProductByID(ctx, productID)
+	if product.IsZero() {
+		return productEntity.Product{}, customErrors.NewNotFoundError("products/not_found", "product not found")
+	}
 	if err != nil {
 		return productEntity.Product{}, fmt.Errorf("productApplicationService -> GetProducts - u.productRepository.GetProducts: %w", err)
 	}

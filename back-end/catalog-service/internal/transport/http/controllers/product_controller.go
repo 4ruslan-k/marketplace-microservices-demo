@@ -4,7 +4,6 @@ import (
 	"catalog_service/config"
 	applicationServices "catalog_service/internal/application/services"
 	dto "catalog_service/internal/transport/http/dto"
-	"errors"
 
 	"github.com/rs/zerolog"
 
@@ -33,7 +32,7 @@ func NewProductController(
 	}
 }
 
-// Creates a product
+// CreateProduct creates a product
 func (h *ProductController) CreateProduct(c *gin.Context) {
 	var createProductInput dto.CreateProductInput
 	if err := c.ShouldBindJSON(&createProductInput); err != nil {
@@ -53,7 +52,7 @@ func (h *ProductController) CreateProduct(c *gin.Context) {
 	dto.HandleOkResponse(c)
 }
 
-// Fetches a list of products
+// GetProducts fetches a list of products
 func (h *ProductController) GetProducts(c *gin.Context) {
 	products, err := h.ApplicationService.GetProducts(c.Request.Context())
 
@@ -64,14 +63,16 @@ func (h *ProductController) GetProducts(c *gin.Context) {
 	dto.HandleResponseWithBody(c, dto.NewProductListOutputFromEntities(products))
 }
 
-// Fetches a product
+// GetProductByID Fetches a product"
 func (h *ProductController) GetProductByID(c *gin.Context) {
-	productID, found := c.Params.Get("productID")
-	if found == false {
-		httpErrors.RespondWithError(c, errors.New("product id parameter not found"))
+	var params struct {
+		ProductID string `uri:"productID" binding:"required,uuid"`
+	}
+	if err := c.ShouldBindUri(&params); err != nil {
+		httpErrors.BadRequest(c, err.Error())
 		return
 	}
-	product, err := h.ApplicationService.GetProductByID(c.Request.Context(), productID)
+	product, err := h.ApplicationService.GetProductByID(c.Request.Context(), params.ProductID)
 
 	if err != nil {
 		httpErrors.RespondWithError(c, err)
@@ -80,14 +81,16 @@ func (h *ProductController) GetProductByID(c *gin.Context) {
 	dto.HandleResponseWithBody(c, dto.NewProductOutputFromEntity(product))
 }
 
-// Deletes a product
+// DeleteProductByID deletes a product
 func (h *ProductController) DeleteProductByID(c *gin.Context) {
-	productID, found := c.Params.Get("productID")
-	if found == false {
-		httpErrors.RespondWithError(c, errors.New("product id parameter not found"))
+	var params struct {
+		ProductID string `uri:"productID" binding:"required,uuid"`
+	}
+	if err := c.ShouldBindUri(&params); err != nil {
+		httpErrors.BadRequest(c, err.Error())
 		return
 	}
-	err := h.ApplicationService.DeleteProductByID(c.Request.Context(), productID)
+	err := h.ApplicationService.DeleteProductByID(c.Request.Context(), params.ProductID)
 
 	if err != nil {
 		httpErrors.RespondWithError(c, err)

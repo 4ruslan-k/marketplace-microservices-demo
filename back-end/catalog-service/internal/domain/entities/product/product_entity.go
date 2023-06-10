@@ -48,3 +48,7 @@ func (p Product) ID() string {
 func (p Product) Name() string {
 	return p.name
 }
+
+func (p Product) IsZero() bool {
+	return p == Product{}
+}
