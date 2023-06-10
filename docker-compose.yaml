@@ -1,5 +1,18 @@
 version: '3.8'
 services:
+  gateway-service:
+    env_file:
+      - ./back-end/gateway-service/.env.docker
+    build:
+      context: back-end/gateway-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/gateway-service/:/app
+    ports:
+      - 4001:4001
+      - 2347:2345
+    depends_on:
+      - redis
   catalog-service:
     env_file:
       - ./back-end/catalog-service/.env.docker
@@ -9,7 +22,7 @@ services:
     volumes:
       - ./back-end/catalog-service/:/app
     ports:
-      - 4001:4001
+      - 4002:4002
       - 2346:2345
   postgres:
     container_name: marketplace_postgres_container
@@ -42,5 +55,13 @@ services:
     volumes:
       - ./back-end:/tmp:rw,delegated
     restart: always
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/marketplace/data
+    command: redis-server --appendonly yes
 volumes:
   postgres:
+  redis-data:

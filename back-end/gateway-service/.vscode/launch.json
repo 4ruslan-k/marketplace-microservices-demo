@@ -5,40 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "catalog-service - Delve into  Docker",
+            "name": "Delve into Docker",
             "type": "go",
             "request": "attach",
             "mode": "remote",
             "debugAdapter": "dlv-dap",
             "substitutePath": [
                 {
-                    "from": "${workspaceFolder}/back-end/catalog-service",
+                    "from": "${workspaceFolder}/",
                     "to": "/app/",
                 },
             ],
-            "port": 2346,
+            "port": 2345,
             "host": "127.0.0.1",
             "showLog": true,
             "apiVersion": 2,
             "trace": "verbose"
         },
         {
-            "name": "gateway-service - Delve into  Docker",
+            "name": "Out of docker",
             "type": "go",
-            "request": "attach",
-            "mode": "remote",
-            "debugAdapter": "dlv-dap",
-            "substitutePath": [
-                {
-                    "from": "${workspaceFolder}/back-end/gateway-service",
-                    "to": "/app/",
-                },
-            ],
-            "port": 2347,
-            "host": "127.0.0.1",
-            "showLog": true,
-            "apiVersion": 2,
-            "trace": "verbose"
-        },
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/app",
+            "envFile": "${workspaceFolder}/.env",
+        }
     ]
 }

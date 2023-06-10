@@ -1,6 +1,8 @@
 package dto
 
-import "catalog_service/internal/domain/entities/product"
+import (
+	"catalog_service/internal/domain/entities/product"
+)
 
 type ProductListOutput struct {
 	Type string          `json:"type"`
@@ -8,7 +10,7 @@ type ProductListOutput struct {
 }
 
 func NewProductListOutputFromEntities(products []product.Product) ProductListOutput {
-	productOutputList := make([]ProductOutput, len(products))
+	productOutputList := make([]ProductOutput, 0, len(products))
 	for _, product := range products {
 		productOutputList = append(productOutputList, NewProductOutputFromEntity(product))
 	}
