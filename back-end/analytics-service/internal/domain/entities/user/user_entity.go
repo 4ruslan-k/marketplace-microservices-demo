@@ -43,10 +43,12 @@ func NewUserFromDatabase(
 	id string,
 	email string,
 	name string,
+	createdAt time.Time,
 ) (*User, error) {
 	user := User{id: id,
-		email: email,
-		name:  name,
+		email:     email,
+		name:      name,
+		createdAt: createdAt,
 	}
 	return &user, nil
 }

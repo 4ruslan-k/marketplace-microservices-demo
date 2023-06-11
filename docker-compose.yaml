@@ -52,6 +52,20 @@ services:
     depends_on:
       - nats
       - postgres
+  customer-service:
+    env_file:
+    - ./back-end/customer-service/.env.docker
+    build:
+      context: back-end/customer-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/customer-service/:/app:rw,delegated
+    ports:
+      - 4006:4006
+      - 2350:2345
+    depends_on:
+      - nats
+      - postgres
   notification-service:
     env_file:
     - ./back-end/notification-service/.env.docker

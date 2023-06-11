@@ -18,7 +18,7 @@ type UserModel struct {
 	ID        string    `bun:"id"`
 	Name      string    `bun:"name"`
 	Email     string    `bun:"email"`
-	CreatedAt time.Time `bun:"created_at"`
+	CreatedAt time.Time `bun:"created_at,nullzero"`
 	UpdatedAt time.Time `bun:"updated_at,nullzero"`
 }
 
@@ -35,6 +35,7 @@ func toEntity(u UserModel) (*userEntity.User, error) {
 		u.ID,
 		u.Email,
 		u.Name,
+		u.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -82,7 +83,6 @@ func (r *userPGRepository) GetByID(ctx context.Context, id string) (*userEntity.
 
 func (r *userPGRepository) GetByEmail(ctx context.Context, email string) (*userEntity.User, error) {
 	var user UserModel
-	// err := r.usersCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	err := r.db.NewSelect().
 		Model(&user).
 		Where("email IN (?)", email).

@@ -4,6 +4,7 @@ import (
 	"context"
 	userEntity "notification_service/internal/domain/entities/user"
 	"testing"
+	"time"
 
 	"github.com/jaswdr/faker"
 )
@@ -33,11 +34,11 @@ func GenerateRandomPassword() string {
 type CreateTestUser struct {
 	ID           string
 	Email        string
-	Password     string
 	Name         string
 	PasswordHash string
 	TotpSecret   string
 	IsMfaEnabled bool
+	CreatedAt    time.Time
 }
 
 func GenerateUserEntity(t *testing.T, c CreateTestUser) userEntity.User {
@@ -58,6 +59,11 @@ func GenerateUserEntity(t *testing.T, c CreateTestUser) userEntity.User {
 		name = GenerateRandomName()
 	}
 
+	createAt := c.CreatedAt
+	if createAt.IsZero() {
+		createAt = time.Now()
+	}
+
 	var err error
 
 	if err != nil {
@@ -68,6 +74,7 @@ func GenerateUserEntity(t *testing.T, c CreateTestUser) userEntity.User {
 		id,
 		email,
 		name,
+		createAt,
 	)
 	if err != nil {
 		t.Fatal(err)
