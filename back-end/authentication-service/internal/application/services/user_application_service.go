@@ -110,7 +110,7 @@ var (
 	MFADisabledNotificationTypeID = "mfa-disabled-v1"
 )
 
-type UserNotificationCreatedEvent struct {
+type NotificationCreatedEvent struct {
 	NotificationTypeID string      `json:"notificationTypeID"`
 	UserID             string      `json:"userID"`
 	Data               interface{} `json:"data,omitempty"`
@@ -438,7 +438,7 @@ func (u userApplicationService) EnableTotp(
 		return fmt.Errorf("userApplicationService -> EnableTotp - u.userRepository.Update: %w", err)
 	}
 
-	bytes, err := json.Marshal(UserNotificationCreatedEvent{
+	bytes, err := json.Marshal(NotificationCreatedEvent{
 		UserID:             user.ID(),
 		NotificationTypeID: MFAEnabledNotificationTypeID,
 	})
@@ -482,7 +482,7 @@ func (u userApplicationService) DisableTotp(
 		return fmt.Errorf("userApplicationService -> EnableTotp - u.userRepository.Update: %w", err)
 	}
 
-	bytes, err := json.Marshal(UserNotificationCreatedEvent{
+	bytes, err := json.Marshal(NotificationCreatedEvent{
 		UserID:             user.ID(),
 		NotificationTypeID: MFADisabledNotificationTypeID,
 	})

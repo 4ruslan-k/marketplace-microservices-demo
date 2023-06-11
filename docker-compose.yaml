@@ -66,6 +66,20 @@ services:
     depends_on:
       - nats
       - postgres
+  cart-service:
+    env_file:
+    - ./back-end/cart-service/.env.docker
+    build:
+      context: back-end/cart-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back-end/cart-service/:/app:rw,delegated
+    ports:
+      - 4007:4007
+      - 2351:2345
+    depends_on:
+      - nats
+      - postgres
   notification-service:
     env_file:
     - ./back-end/notification-service/.env.docker

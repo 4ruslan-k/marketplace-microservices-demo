@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"catalog_service/config"
+	"catalog_service/pkg/nats"
 	pgStorage "catalog_service/pkg/storage/pg"
 
 	applicationServices "catalog_service/internal/application/services"
@@ -25,8 +26,9 @@ func buildDependencies() (*httpserver.Server, error) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	logger := zerolog.New(os.Stdout)
 	pgConn := pgStorage.NewClient(logger, conf.PgDSN)
+	natsClient := nats.NewNatsClient()
 	productRepo := pgRepositories.NewProductRepository(pgConn, logger)
-	productAppService := applicationServices.NewProductApplicationService(productRepo, logger)
+	productAppService := applicationServices.NewProductApplicationService(productRepo, logger, natsClient)
 	server := httpServ.NewHTTPServer(productAppService, gin.New(), logger, conf)
 
 	return server, nil

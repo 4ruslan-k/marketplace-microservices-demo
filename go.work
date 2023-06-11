@@ -7,4 +7,5 @@ use (
 	./back-end/analytics-service
 	./back-end/customer-service
 	./back-end/notification-service
+	./back-end/cart-service
 )

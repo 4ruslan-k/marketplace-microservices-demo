@@ -3,8 +3,11 @@ package applicationservices
 import (
 	productEntity "catalog_service/internal/domain/entities/product"
 	"catalog_service/internal/ports/repositories"
+	natsClient "catalog_service/pkg/nats"
 	"context"
+	"encoding/json"
 	"fmt"
+	"time"
 
 	customErrors "catalog_service/pkg/errors"
 
@@ -16,7 +19,23 @@ var _ ProductApplicationService = (*productApplicationService)(nil)
 type productApplicationService struct {
 	productRepository repositories.ProductRepository
 	logger            zerolog.Logger
+	natsClient        natsClient.NatsClient
 }
+
+type ProductCreatedEvent struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Price     float64   `json:"price"`
+	Quantity  int       `json:"quantity"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+const (
+	productCreatedSubject             = "products.created"
+	productCreatedDurableConsumerName = "cart-service-product-created"
+	productStream                     = "products"
+)
 
 type ProductApplicationService interface {
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
@@ -28,8 +47,9 @@ type ProductApplicationService interface {
 func NewProductApplicationService(
 	productRepository repositories.ProductRepository,
 	logger zerolog.Logger,
+	nats natsClient.NatsClient,
 ) *productApplicationService {
-	return &productApplicationService{productRepository: productRepository, logger: logger}
+	return &productApplicationService{productRepository: productRepository, logger: logger, natsClient: nats}
 }
 
 // Creates a product
@@ -46,6 +66,19 @@ func (u productApplicationService) CreateProduct(
 	if err != nil {
 		return fmt.Errorf("productApplicationService -> CreateProduct -  u.productRepository.Sav: %w", err)
 	}
+
+	bytes, err := json.Marshal(ProductCreatedEvent{
+		ID:        product.ID(),
+		Name:      product.Name(),
+		Price:     product.Price(),
+		Quantity:  product.Quantity(),
+		CreatedAt: product.CreatedAt(),
+		UpdatedAt: product.UpdatedAt(),
+	})
+	if err != nil {
+		return err
+	}
+	u.natsClient.PublishMessage(productCreatedSubject, string(bytes))
 
 	return nil
 }

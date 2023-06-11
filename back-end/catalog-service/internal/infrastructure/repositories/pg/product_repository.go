@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
@@ -16,10 +17,12 @@ var _ repositories.ProductRepository = (*productPGRepository)(nil)
 type ProductModel struct {
 	bun.BaseModel `bun:"table:products,alias:p"`
 
-	ID       string  `bun:"id"`
-	Name     string  `bun:"name"`
-	Price    float64 `bun:"price"`
-	Quantity int     `bun:"quantity"`
+	ID        string    `bun:"id"`
+	Name      string    `bun:"name"`
+	Price     float64   `bun:"price"`
+	Quantity  int       `bun:"quantity"`
+	CreatedAt time.Time `bson:"createdAt,omitempty"`
+	UpdatedAt time.Time `bson:"updated,omitempty"`
 }
 
 type productPGRepository struct {
@@ -34,6 +37,8 @@ func (p ProductModel) toEntity() productEntity.Product {
 		p.Name,
 		p.Price,
 		p.Quantity,
+		p.CreatedAt,
+		p.UpdatedAt,
 	)
 
 	return product
@@ -41,9 +46,12 @@ func (p ProductModel) toEntity() productEntity.Product {
 
 func toDB(p productEntity.Product) (ProductModel, error) {
 	return ProductModel{
-		ID:    p.ID(),
-		Name:  p.Name(),
-		Price: p.Price(),
+		ID:        p.ID(),
+		Name:      p.Name(),
+		Price:     p.Price(),
+		Quantity:  p.Quantity(),
+		CreatedAt: p.CreatedAt(),
+		UpdatedAt: p.UpdatedAt(),
 	}, nil
 }
 
