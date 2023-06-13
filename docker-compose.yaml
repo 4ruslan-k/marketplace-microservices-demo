@@ -122,7 +122,7 @@ services:
       POSTGRES_DB: catalog
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      PGDATA: /data/postgres
+      PGDATA: /data/marketplace/postgres
     volumes:
        - postgres:/data/marketplace/postgres
     ports:

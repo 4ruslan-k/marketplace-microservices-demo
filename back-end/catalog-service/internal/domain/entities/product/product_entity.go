@@ -40,6 +40,7 @@ func NewProduct(createProductParams CreateProductParams) (Product, error) {
 		id:        id,
 		name:      createProductParams.Name,
 		price:     createProductParams.Price,
+		quantity:  createProductParams.Quantity,
 		createdAt: time.Now(),
 	}
 
