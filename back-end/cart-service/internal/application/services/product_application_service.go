@@ -6,6 +6,7 @@ import (
 
 	productEntity "cart_service/internal/domain/entities/product"
 	"cart_service/internal/ports/repositories"
+	customErrors "cart_service/pkg/errors"
 	nats "cart_service/pkg/messaging/nats"
 
 	"github.com/rs/zerolog"
@@ -21,7 +22,7 @@ type productApplicationService struct {
 
 type ProductApplicationService interface {
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
-	AddProductToCart(ctx context.Context) error
+	AddProductToCart(ctx context.Context, productID string) error
 	DeleteProduct(ctx context.Context) error
 }
 
@@ -48,9 +49,21 @@ func (n productApplicationService) CreateProduct(
 	return nil
 }
 
+var ErrInvalidEmailFormat = customErrors.NewNotFoundError("cart/products", "Product not found")
+
 func (n productApplicationService) AddProductToCart(
 	ctx context.Context,
+	productID string,
 ) error {
+	product, err := n.productRepository.GetProductByID(ctx, productID)
+	if product.IsZero() {
+		return ErrInvalidEmailFormat
+	}
+
+	if err != nil {
+		return fmt.Errorf("productApplicationService AddProductToCart -> .productRepository.GetProductByID: %w", err)
+	}
+
 	return nil
 }
 

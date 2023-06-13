@@ -39,6 +39,9 @@ func NewRouter(
 	catalogServiceURL := config.CatalogServiceURL
 	catalogServiceProxy := controllers.ReverseProxy(catalogServiceURL)
 
+	cartServiceURL := config.CartServiceURL
+	cartServiceProxy := controllers.ReverseProxy(cartServiceURL)
+
 	// declare before CORS
 	handler.GET("/socket.io/*any", authenticate, notifProxy)
 	handler.POST("/socket.io/*any", authenticate, notifProxy)
@@ -83,4 +86,7 @@ func NewRouter(
 	v1.GET("/products", authenticate, catalogServiceProxy)
 	v1.GET("/products/:productID", authenticate, catalogServiceProxy)
 	v1.DELETE("/products/:productID", authenticate, catalogServiceProxy)
+
+	// cart
+	v1.POST("/cart/products", authenticate, cartServiceProxy)
 }

@@ -2,7 +2,8 @@ package routes
 
 import (
 	"cart_service/config"
-	applicationServices "cart_service/internal/application/services"
+	controllers "cart_service/internal/transport/http/controllers"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +12,16 @@ import (
 
 func NewRouter(
 	handler *gin.Engine,
-	n applicationServices.ProductApplicationService,
+	p *controllers.ProductController,
 	logger zerolog.Logger,
 	config *config.Config,
 ) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
+
+	v1 := handler.Group("/v1")
+
+	v1.POST("/cart/products", p.AddProductToCart)
+
 }

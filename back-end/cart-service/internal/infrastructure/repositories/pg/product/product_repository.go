@@ -4,6 +4,8 @@ import (
 	productEntity "cart_service/internal/domain/entities/product"
 	"cart_service/internal/ports/repositories"
 	"context"
+	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -17,7 +19,7 @@ type ProductModel struct {
 	Price     float64   `bun:"price"`
 	Name      string    `bun:"name"`
 	Quantity  int       `bun:"quantity"`
-	CreatedAt time.Time `bun:"created_at"`
+	CreatedAt time.Time `bun:"created_at,nullzero"`
 	UpdatedAt time.Time `bun:"updated_at,nullzero"`
 }
 
@@ -66,4 +68,27 @@ func (r *productPGRepository) CreateProduct(ctx context.Context, product product
 		return err
 	}
 	return nil
+}
+
+func (r *productPGRepository) GetProductByID(ctx context.Context, id string) (productEntity.Product, error) {
+
+	var productDB ProductModel
+	err := r.db.NewSelect().
+		Model(&productDB).
+		Where("id IN (?)", id).
+		Scan(ctx)
+
+	if err == sql.ErrNoRows {
+		return productEntity.Product{}, nil
+	}
+
+	if err != nil {
+		return productEntity.Product{}, fmt.Errorf("customerPGRepository -> GetByID -> r.db.NewSelect(): %w", err)
+	}
+
+	product := productDB.toEntity()
+	if err != nil {
+		return productEntity.Product{}, fmt.Errorf("customerPGRepository -> GetByID -> toEntity: %w", err)
+	}
+	return product, nil
 }

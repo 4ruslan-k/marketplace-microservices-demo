@@ -19,6 +19,8 @@ import (
 	nats "cart_service/pkg/messaging/nats"
 
 	messaging "cart_service/internal/transport/messaging"
+
+	controllers "cart_service/internal/transport/http/controllers"
 )
 
 func buildDependencies() (
@@ -42,8 +44,10 @@ func buildDependencies() (
 	userApplicationService := applicationServices.NewCustomerApplicationService(userRepo, logger, userDomainService)
 	productAppService := applicationServices.NewProductApplicationService(productRepo, logger, nats)
 
+	productController := controllers.NewProductController(productAppService, logger, config)
+
 	userMessageHandlers := messaging.NewCustomerMessagingHandlers(nats, userApplicationService, logger)
 	productMessageHandlers := messaging.NewProductMessagingHandlers(nats, productAppService, logger)
-	httpServer := httpServ.NewHTTPServer(productAppService, gin.New(), logger, config, pg)
+	httpServer := httpServ.NewHTTPServer(productController, gin.New(), logger, config, pg)
 	return userMessageHandlers, productMessageHandlers, httpServer, nil
 }

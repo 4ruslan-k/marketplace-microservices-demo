@@ -11,6 +11,6 @@ RUN go mod download
 COPY . .
 RUN go build -o /go/bin/app cmd/app/main.go
 
-EXPOSE 4005
+EXPOSE 4007
 
 CMD ["/go/bin/app"]

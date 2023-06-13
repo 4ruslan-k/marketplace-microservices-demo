@@ -2,8 +2,6 @@ package product
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Product struct {
@@ -26,7 +24,7 @@ type CreateProductParams struct {
 
 func NewProduct(createProductParams CreateProductParams) (Product, error) {
 	product := Product{
-		id:        uuid.NewString(),
+		id:        createProductParams.ID,
 		name:      createProductParams.Name,
 		price:     createProductParams.Price,
 		quantity:  createProductParams.Quantity,

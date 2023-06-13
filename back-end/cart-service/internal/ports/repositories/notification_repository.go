@@ -7,4 +7,5 @@ import (
 
 type ProductRepository interface {
 	CreateProduct(ctx context.Context, product productEntity.Product) error
+	GetProductByID(ctx context.Context, id string) (productEntity.Product, error)
 }
