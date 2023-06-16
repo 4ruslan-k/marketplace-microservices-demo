@@ -44,7 +44,8 @@ func (c Cart) Products() []CartProduct {
 
 func (cart Cart) AddProductToCart(productToAdd CartProduct) (Cart, error) {
 	isProductInCart := false
-	for _, productInCart := range cart.products {
+	for i := range cart.products {
+		productInCart := &cart.products[i]
 		if productInCart.ProductID == productToAdd.ProductID {
 			isProductInCart = true
 			productInCart.Quantity += productToAdd.Quantity
@@ -52,6 +53,26 @@ func (cart Cart) AddProductToCart(productToAdd CartProduct) (Cart, error) {
 	}
 	if !isProductInCart {
 		cart.products = append(cart.products, productToAdd)
+	}
+	return cart, nil
+}
+
+func (cart Cart) DeleteProductFromCart(productToRemove CartProduct) (Cart, error) {
+	shouldBeDeleted := false
+	var indexOfProductToDelete int
+	for i := range cart.products {
+		productInCart := &cart.products[i]
+		if productInCart.ProductID == productToRemove.ProductID {
+			productInCart.Quantity -= productToRemove.Quantity
+			if productInCart.Quantity <= 0 {
+				shouldBeDeleted = true
+				indexOfProductToDelete = i
+			}
+		}
+	}
+
+	if shouldBeDeleted {
+		cart.products = append(cart.products[:indexOfProductToDelete], cart.products[indexOfProductToDelete+1:]...)
 	}
 	return cart, nil
 }

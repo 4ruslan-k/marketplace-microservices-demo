@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	cartEntity "cart_service/internal/domain/entities/cart"
 	productEntity "cart_service/internal/domain/entities/product"
 	"cart_service/internal/ports/repositories"
 	customErrors "cart_service/pkg/errors"
@@ -21,8 +22,9 @@ type productApplicationService struct {
 }
 
 type ProductApplicationService interface {
+	GetCart(ctx context.Context, customerID string) (cartEntity.Cart, error)
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
-	AddProductToCart(ctx context.Context, productID string) error
+	AddProductToCart(ctx context.Context, productID string, quantity int, customerID string) error
 	DeleteProduct(ctx context.Context) error
 }
 
@@ -34,7 +36,7 @@ func NewProductApplicationService(
 	return productApplicationService{productRepository, logger, natsClient}
 }
 
-func (n productApplicationService) CreateProduct(
+func (p productApplicationService) CreateProduct(
 	ctx context.Context,
 	createProductParams productEntity.CreateProductParams,
 ) error {
@@ -42,7 +44,7 @@ func (n productApplicationService) CreateProduct(
 	if err != nil {
 		return fmt.Errorf("productApplicationService CreateProduct ->  productEntity.NewProduct: %w", err)
 	}
-	err = n.productRepository.CreateProduct(ctx, product)
+	err = p.productRepository.CreateProduct(ctx, product)
 	if err != nil {
 		return fmt.Errorf("productApplicationService CreateProduct -> productRepository.CreateProduct: %w", err)
 	}
@@ -51,23 +53,60 @@ func (n productApplicationService) CreateProduct(
 
 var ErrInvalidEmailFormat = customErrors.NewNotFoundError("cart/products", "Product not found")
 
-func (n productApplicationService) AddProductToCart(
+func (p productApplicationService) AddProductToCart(
 	ctx context.Context,
 	productID string,
+	quantity int,
+	customerID string,
 ) error {
-	product, err := n.productRepository.GetProductByID(ctx, productID)
+	product, err := p.productRepository.GetProductByID(ctx, productID)
 	if product.IsZero() {
 		return ErrInvalidEmailFormat
 	}
 
+	products := []cartEntity.CartProduct{
+		{
+			ProductID: productID,
+			Quantity:  quantity,
+		},
+	}
+
+	cart, err := cartEntity.NewCart(cartEntity.CreateCartParams{
+		CustomerID: customerID,
+		Products:   products,
+	})
+
 	if err != nil {
-		return fmt.Errorf("productApplicationService AddProductToCart -> .productRepository.GetProductByID: %w", err)
+		return fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
+	}
+
+	cart, err = cart.AddProductToCart(
+		cartEntity.CartProduct{
+			ProductID: productID,
+			Quantity:  quantity,
+		},
+	)
+
+	if err != nil {
+		return fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
+	}
+
+	// TODO: save card state using repository
+
+	if err != nil {
+		return fmt.Errorf("productApplicationService AddProductToCart -> productRepository.GetProductByID: %w", err)
 	}
 
 	return nil
 }
 
-func (n productApplicationService) DeleteProduct(ctx context.Context) error {
+func (p productApplicationService) GetCart(ctx context.Context, customerID string) (cartEntity.Cart, error) {
+	panic("implement me")
 
+	return cartEntity.Cart{}, nil
+}
+
+func (p productApplicationService) DeleteProduct(ctx context.Context) error {
+	panic("implement me")
 	return nil
 }
