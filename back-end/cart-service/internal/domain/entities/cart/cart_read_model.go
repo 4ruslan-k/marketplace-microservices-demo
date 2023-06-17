@@ -5,16 +5,16 @@ import (
 )
 
 type CartReadModelProduct struct {
-	ProductID string  `json:"product_id"`
+	ProductID string  `json:"productId"`
 	Name      string  `json:"name"`
 	Quantity  int     `json:"quantity"`
 	Price     float64 `json:"price"`
 }
 
 type CartReadModel struct {
-	CustomerID string                 `json:"customer_id"`
+	CustomerID string                 `json:"customerId"`
 	Products   []CartReadModelProduct `json:"products"`
-	TotalPrice float64                `json:"total_price"`
+	TotalPrice float64                `json:"totalPrice"`
 }
 
 func NewCartReadModel(customerID string, products []CartReadModelProduct) CartReadModel {

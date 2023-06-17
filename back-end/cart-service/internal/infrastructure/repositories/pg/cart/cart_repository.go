@@ -45,8 +45,7 @@ func (r *cartRepository) GetByCustomerID(ctx context.Context, customerID string)
 	var cartProducts []CartProductModel
 	err := r.db.NewSelect().
 		Model(&cartProducts).
-		ColumnExpr("cart_products.*").
-		Join("JOIN products AS p ON p.id = cart_products.product_id").
+		Relation("Product").
 		Where("cart_products.customer_id = ?", customerID).
 		Scan(ctx)
 
@@ -71,6 +70,7 @@ func (r *cartRepository) GetByCustomerID(ctx context.Context, customerID string)
 		customerID,
 		cartReadModelProducts,
 	)
+	fmt.Printf("cart: %+v\n", cart)
 	return cart, nil
 }
 
@@ -122,7 +122,8 @@ func (r *cartRepository) SaveCart(
 	}
 
 	for _, event := range events {
-		if ev, ok := event.(cartEntity.ProductAdded); ok {
+		switch ev := event.(type) {
+		case cartEntity.AddedProduct:
 			product := CartProductModel{
 				CustomerID: cart.CustomerID(),
 				ProductID:  ev.Product.ProductID,
@@ -136,19 +137,7 @@ func (r *cartRepository) SaveCart(
 				}
 				return fmt.Errorf("cartRepository -> SaveCart -> r.db.NewInsert(): %w", err)
 			}
-		} else if ev, ok := event.(cartEntity.ProductRemoved); ok {
-			_, err := r.db.NewDelete().
-				Model(&CartProductModel{}).
-				Where("customer_id = ? AND product_id = ?", cart.CustomerID(), ev.ProductID).
-				Exec(ctx)
-			if err != nil {
-				txError := tx.Rollback()
-				if txError != nil {
-					return fmt.Errorf("cartRepository -> SaveCart -> tx.Rollback(): %w", txError)
-				}
-				return fmt.Errorf("cartRepository -> SaveCart ->r.db.NewDelete(): %w", err)
-			}
-		} else if ev, ok := event.(cartEntity.ProductQuantityChanged); ok {
+		case cartEntity.ProductQuantityChanged:
 			_, err := r.db.NewUpdate().
 				Model(&CartProductModel{}).
 				Set("quantity = ?", ev.Product.Quantity).
@@ -161,7 +150,19 @@ func (r *cartRepository) SaveCart(
 				}
 				return fmt.Errorf("cartRepository -> SaveCart -> r.db.NewUpdate(): %w", err)
 			}
-		} else {
+		case cartEntity.ProductRemoved:
+			_, err := r.db.NewDelete().
+				Model(&CartProductModel{}).
+				Where("customer_id = ? AND product_id = ?", cart.CustomerID(), ev.ProductID).
+				Exec(ctx)
+			if err != nil {
+				txError := tx.Rollback()
+				if txError != nil {
+					return fmt.Errorf("cartRepository -> SaveCart -> tx.Rollback(): %w", txError)
+				}
+				return fmt.Errorf("cartRepository -> SaveCart ->r.db.NewDelete(): %w", err)
+			}
+		default:
 			return fmt.Errorf("cartRepository -> SaveCart -> unknown event: %v", event)
 		}
 	}

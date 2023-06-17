@@ -83,10 +83,11 @@ func TestCartEntity_NewCart(t *testing.T) {
 	}
 }
 
-func TestCartEntity_AddProductToCart(t *testing.T) {
+func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 	type expRes struct {
 		CustomerID string
 		Products   []cartEntity.CartProduct
+		Events     []cartEntity.Event
 	}
 	testCases := []struct {
 		name   string
@@ -109,6 +110,13 @@ func TestCartEntity_AddProductToCart(t *testing.T) {
 						ProductID: "123",
 						Quantity:  2,
 					},
+				},
+				Events: []cartEntity.Event{cartEntity.AddedProduct{
+					Product: cartEntity.CartProduct{
+						ProductID: "123",
+						Quantity:  2,
+					},
+				},
 				},
 			},
 			expErr: nil,
@@ -137,11 +145,17 @@ func TestCartEntity_AddProductToCart(t *testing.T) {
 						Quantity:  2,
 					},
 				},
+				Events: []cartEntity.Event{cartEntity.AddedProduct{
+					Product: cartEntity.CartProduct{
+						ProductID: "product_id_two",
+						Quantity:  2,
+					},
+				}},
 			},
 			expErr: nil,
 		},
 		{
-			name: "add_product_to_cart_with_the_same_product",
+			name: "update_product_quantity",
 			cart: NewTestCart(t, "customer_id", []cartEntity.CartProduct{
 				{
 					ProductID: "product_id_one",
@@ -157,43 +171,47 @@ func TestCartEntity_AddProductToCart(t *testing.T) {
 				Products: []cartEntity.CartProduct{
 					{
 						ProductID: "product_id_one",
-						Quantity:  7,
+						Quantity:  2,
+					},
+				},
+				Events: []cartEntity.Event{cartEntity.ProductQuantityChanged{
+					Product: cartEntity.CartProduct{
+						ProductID: "product_id_one",
+						Quantity:  2,
+					}},
+				},
+			},
+			expErr: nil,
+		},
+		{
+			name: "delete_product_from_cart",
+			cart: NewTestCart(t, "customer_id", []cartEntity.CartProduct{
+				{
+					ProductID: "product_id_one",
+					Quantity:  5,
+				},
+			}),
+			in: cartEntity.CartProduct{
+				ProductID: "product_id_one",
+				Quantity:  0,
+			},
+			expRes: expRes{
+				CustomerID: "customer_id",
+				Products:   []cartEntity.CartProduct{},
+				Events: []cartEntity.Event{
+					cartEntity.ProductRemoved{
+						ProductID: "product_id_one",
 					},
 				},
 			},
 			expErr: nil,
 		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			cart, err := tc.cart.AddProductToCart(tc.in)
-
-			require.Equal(t, tc.expErr, err)
-			assert.Equal(t, tc.expRes.CustomerID, cart.CustomerID())
-			assert.DeepEqual(t, tc.expRes.Products, cart.Products())
-		})
-	}
-}
-
-func TestCartEntity_DeleteProductFromCart(t *testing.T) {
-	type expRes struct {
-		CustomerID string
-		Products   []cartEntity.CartProduct
-	}
-	testCases := []struct {
-		name   string
-		in     cartEntity.CartProduct
-		cart   cartEntity.Cart
-		expRes expRes
-		expErr error
-	}{
 		{
 			name: "delete_product_from_empty_cart",
 			cart: NewTestCart(t, "123", nil),
 			in: cartEntity.CartProduct{
 				ProductID: "123",
-				Quantity:  2,
+				Quantity:  0,
 			},
 			expRes: expRes{
 				CustomerID: "123",
@@ -211,7 +229,7 @@ func TestCartEntity_DeleteProductFromCart(t *testing.T) {
 			}),
 			in: cartEntity.CartProduct{
 				ProductID: "product_id_two",
-				Quantity:  2,
+				Quantity:  0,
 			},
 			expRes: expRes{
 				CustomerID: "customer_id",
@@ -234,52 +252,16 @@ func TestCartEntity_DeleteProductFromCart(t *testing.T) {
 			}),
 			in: cartEntity.CartProduct{
 				ProductID: "product_id_one",
-				Quantity:  2,
+				Quantity:  0,
 			},
 			expRes: expRes{
 				CustomerID: "customer_id",
-				Products: []cartEntity.CartProduct{
-					{
+				Products:   []cartEntity.CartProduct{},
+				Events: []cartEntity.Event{
+					cartEntity.ProductRemoved{
 						ProductID: "product_id_one",
-						Quantity:  3,
 					},
 				},
-			},
-			expErr: nil,
-		},
-		{
-			name: "delete_product_from_cart_with_the_same_product_and_same_quantity",
-			cart: NewTestCart(t, "customer_id", []cartEntity.CartProduct{
-				{
-					ProductID: "product_id_one",
-					Quantity:  5,
-				},
-			}),
-			in: cartEntity.CartProduct{
-				ProductID: "product_id_one",
-				Quantity:  5,
-			},
-			expRes: expRes{
-				CustomerID: "customer_id",
-				Products:   []cartEntity.CartProduct{},
-			},
-			expErr: nil,
-		},
-		{
-			name: "delete_product_from_cart_with_the_same_product_and_greater_quantity",
-			cart: NewTestCart(t, "customer_id", []cartEntity.CartProduct{
-				{
-					ProductID: "product_id_one",
-					Quantity:  5,
-				},
-			}),
-			in: cartEntity.CartProduct{
-				ProductID: "product_id_one",
-				Quantity:  6,
-			},
-			expRes: expRes{
-				CustomerID: "customer_id",
-				Products:   []cartEntity.CartProduct{},
 			},
 			expErr: nil,
 		},
@@ -287,11 +269,12 @@ func TestCartEntity_DeleteProductFromCart(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cart, err := tc.cart.DeleteProductFromCart(tc.in)
+			cart, err := tc.cart.UpdateProductsInCart(tc.in)
 
 			require.Equal(t, tc.expErr, err)
 			assert.Equal(t, tc.expRes.CustomerID, cart.CustomerID())
 			assert.DeepEqual(t, tc.expRes.Products, cart.Products())
+			assert.DeepEqual(t, tc.expRes.Events, cart.Events())
 		})
 	}
 }

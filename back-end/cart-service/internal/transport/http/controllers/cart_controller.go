@@ -33,14 +33,14 @@ type AuthInfo struct {
 	UserID string `json:"user_id"`
 }
 
-type AddProductToCartInput struct {
+type UpdateProductsInCartInput struct {
 	ProductID string `json:"productId" binding:"required"`
-	Quantity  int    `json:"quantity" binding:"required"`
+	Quantity  int    `json:"quantity" binding:"gte=0"`
 }
 
-func (p *ProductController) AddProductToCart(c *gin.Context) {
-	var addProductToCartInput AddProductToCartInput
-	if err := c.ShouldBindJSON(&addProductToCartInput); err != nil {
+func (p *ProductController) UpdateProductsInCart(c *gin.Context) {
+	var UpdateProductsInCartInput UpdateProductsInCartInput
+	if err := c.ShouldBindJSON(&UpdateProductsInCartInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return
 	}
@@ -49,10 +49,10 @@ func (p *ProductController) AddProductToCart(c *gin.Context) {
 	authValue := c.Request.Header.Get("X-Authentication-Info")
 	json.Unmarshal([]byte(authValue), &authInfo)
 
-	err := p.ApplicationService.AddProductToCart(
+	err := p.ApplicationService.UpdateProductsInCart(
 		c.Request.Context(),
-		addProductToCartInput.ProductID,
-		addProductToCartInput.Quantity,
+		UpdateProductsInCartInput.ProductID,
+		UpdateProductsInCartInput.Quantity,
 		authInfo.UserID,
 	)
 	if err != nil {

@@ -88,6 +88,6 @@ func NewRouter(
 	v1.DELETE("/products/:productID", authenticate, catalogServiceProxy)
 
 	// cart
-	v1.POST("/cart/products", authenticate, cartServiceProxy)
+	v1.PATCH("/cart/products", authenticate, cartServiceProxy)
 	v1.GET("/cart", authenticate, cartServiceProxy)
 }

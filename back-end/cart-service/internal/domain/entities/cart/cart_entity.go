@@ -8,18 +8,6 @@ var (
 	ErrInvalidCustomerID = customErrors.NewIncorrectInputError("cart.products.add.invalid_customer_id", "invalid customer ID")
 )
 
-type ProductAdded struct {
-	Product CartProduct
-}
-
-type ProductQuantityChanged struct {
-	Product CartProduct
-}
-
-type ProductRemoved struct {
-	ProductID string
-}
-
 // TODO: add created_at/updated_at
 type CartProduct struct {
 	ProductID string
@@ -29,7 +17,32 @@ type CartProduct struct {
 type Cart struct {
 	customerID string
 	products   []CartProduct
-	_events    []any
+	// TODO: test
+	events []Event
+}
+
+type AddedProduct struct {
+	Product CartProduct
+}
+
+func (a AddedProduct) EventType() string {
+	return "added_product"
+}
+
+type ProductQuantityChanged struct {
+	Product CartProduct
+}
+
+func (p ProductQuantityChanged) EventType() string {
+	return "product_quantity_changed"
+}
+
+type ProductRemoved struct {
+	ProductID string
+}
+
+func (r ProductRemoved) EventType() string {
+	return "product_removed"
 }
 
 type CreateCartParams struct {
@@ -56,46 +69,48 @@ func (c Cart) Products() []CartProduct {
 	return c.products
 }
 
-func (c Cart) Events() []any {
-	return c._events
+func (c Cart) Events() []Event {
+	return c.events
 }
 
-func (cart Cart) AddProductToCart(productToAdd CartProduct) (Cart, error) {
+type Event interface {
+	EventType() string
+}
+
+func (cart Cart) UpdateProductsInCart(productToUpdate CartProduct) (Cart, error) {
+	if productToUpdate.Quantity <= 0 {
+		return cart.deleteProductFromCart(productToUpdate)
+	}
 	isProductInCart := false
 	for i := range cart.products {
 		productInCart := &cart.products[i]
-		if productInCart.ProductID == productToAdd.ProductID {
+		if productInCart.ProductID == productToUpdate.ProductID {
 			isProductInCart = true
-			productInCart.Quantity += productToAdd.Quantity
-			cart._events = append(cart._events, ProductQuantityChanged{Product: *productInCart})
+			productInCart.Quantity = productToUpdate.Quantity
+			cart.events = append(cart.events, ProductQuantityChanged{Product: *productInCart})
 		}
 	}
 	if !isProductInCart {
-		cart.products = append(cart.products, productToAdd)
-		cart._events = append(cart._events, ProductAdded{Product: productToAdd})
+		cart.products = append(cart.products, productToUpdate)
+		cart.events = append(cart.events, AddedProduct{Product: productToUpdate})
 	}
 	return cart, nil
 }
 
-func (cart Cart) DeleteProductFromCart(productToRemove CartProduct) (Cart, error) {
-	shouldBeDeleted := false
+func (cart Cart) deleteProductFromCart(productToRemove CartProduct) (Cart, error) {
+	isProductInCart := false
 	var indexOfProductToDelete int
 	for i := range cart.products {
 		productInCart := &cart.products[i]
 		if productInCart.ProductID == productToRemove.ProductID {
-			productInCart.Quantity -= productToRemove.Quantity
-			if productInCart.Quantity <= 0 {
-				shouldBeDeleted = true
-				indexOfProductToDelete = i
-			} else {
-				cart._events = append(cart._events, ProductQuantityChanged{Product: *productInCart})
-			}
+			isProductInCart = true
+			indexOfProductToDelete = i
 		}
 	}
 
-	if shouldBeDeleted {
+	if isProductInCart {
 		cart.products = append(cart.products[:indexOfProductToDelete], cart.products[indexOfProductToDelete+1:]...)
-		cart._events = append(cart._events, ProductRemoved{ProductID: productToRemove.ProductID})
+		cart.events = append(cart.events, ProductRemoved{ProductID: productToRemove.ProductID})
 	}
 	return cart, nil
 }

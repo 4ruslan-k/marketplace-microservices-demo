@@ -25,8 +25,7 @@ type productApplicationService struct {
 type ProductApplicationService interface {
 	GetCart(ctx context.Context, customerID string) (cartEntity.CartReadModel, error)
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
-	AddProductToCart(ctx context.Context, productID string, quantity int, customerID string) error
-	DeleteProduct(ctx context.Context) error
+	UpdateProductsInCart(ctx context.Context, productID string, quantity int, customerID string) error
 }
 
 func NewProductApplicationService(
@@ -60,7 +59,7 @@ func (p productApplicationService) CreateProduct(
 
 var ErrInvalidEmailFormat = customErrors.NewNotFoundError("cart/products", "Product not found")
 
-func (p productApplicationService) AddProductToCart(
+func (p productApplicationService) UpdateProductsInCart(
 	ctx context.Context,
 	productID string,
 	quantity int,
@@ -68,7 +67,7 @@ func (p productApplicationService) AddProductToCart(
 ) error {
 	updateOperation := func(cart cartEntity.Cart) (cartEntity.Cart, error) {
 
-		cart, err := cart.AddProductToCart(
+		cart, err := cart.UpdateProductsInCart(
 			cartEntity.CartProduct{
 				ProductID: productID,
 				Quantity:  quantity,
@@ -76,7 +75,7 @@ func (p productApplicationService) AddProductToCart(
 		)
 
 		if err != nil {
-			return cartEntity.Cart{}, fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
+			return cartEntity.Cart{}, fmt.Errorf("productApplicationService UpdateProductsInCart -> cartEntity.NewCart: %w", err)
 		}
 		return cart, nil
 	}
@@ -84,7 +83,7 @@ func (p productApplicationService) AddProductToCart(
 	err := p.cartRepository.SaveCart(ctx, customerID, updateOperation)
 
 	if err != nil {
-		return fmt.Errorf("productApplicationService AddProductToCart -> productRepository.GetProductByID: %w", err)
+		return fmt.Errorf("productApplicationService UpdateProductsInCart -> productRepository.GetProductByID: %w", err)
 	}
 
 	return nil
@@ -96,9 +95,4 @@ func (p productApplicationService) GetCart(ctx context.Context, customerID strin
 		return cartEntity.CartReadModel{}, fmt.Errorf("productApplicationService GetCart -> cartRepository.GetByCustomerID: %w", err)
 	}
 	return cart, nil
-}
-
-func (p productApplicationService) DeleteProduct(ctx context.Context) error {
-	panic("implement me")
-	return nil
 }
