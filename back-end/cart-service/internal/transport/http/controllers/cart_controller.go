@@ -61,3 +61,24 @@ func (p *ProductController) AddProductToCart(c *gin.Context) {
 	}
 	handleOkResponse(c)
 }
+
+type GetCartInput struct {
+	CustomerID string `json:"productId" binding:"required"`
+}
+
+func (p *ProductController) GetCart(c *gin.Context) {
+
+	var authInfo AuthInfo
+	authValue := c.Request.Header.Get("X-Authentication-Info")
+	json.Unmarshal([]byte(authValue), &authInfo)
+
+	cart, err := p.ApplicationService.GetCart(
+		c.Request.Context(),
+		authInfo.UserID,
+	)
+	if err != nil {
+		httpErrors.RespondWithError(c, err)
+		return
+	}
+	handleResponseWithBody(c, cart)
+}

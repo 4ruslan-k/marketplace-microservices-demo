@@ -76,3 +76,7 @@ func (cart Cart) DeleteProductFromCart(productToRemove CartProduct) (Cart, error
 	}
 	return cart, nil
 }
+
+func (cart Cart) isZero() bool {
+	return cart.customerID == ""
+}

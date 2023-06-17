@@ -15,7 +15,7 @@ import (
 type ProductModel struct {
 	bun.BaseModel `bun:"table:products"`
 
-	ID        string    `bun:"id,pk"`
+	ID        string    `bun:"id,pk,alias:products"`
 	Price     float64   `bun:"price"`
 	Name      string    `bun:"name"`
 	Quantity  int       `bun:"quantity"`

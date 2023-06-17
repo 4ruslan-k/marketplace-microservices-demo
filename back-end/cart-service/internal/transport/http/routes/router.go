@@ -23,5 +23,6 @@ func NewRouter(
 	v1 := handler.Group("/v1")
 
 	v1.POST("/cart/products", p.AddProductToCart)
+	v1.GET("/cart", p.GetCart)
 
 }

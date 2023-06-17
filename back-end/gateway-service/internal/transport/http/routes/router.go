@@ -89,4 +89,5 @@ func NewRouter(
 
 	// cart
 	v1.POST("/cart/products", authenticate, cartServiceProxy)
+	v1.GET("/cart", authenticate, cartServiceProxy)
 }

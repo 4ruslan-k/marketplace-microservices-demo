@@ -5,16 +5,16 @@ import (
 )
 
 type CartReadModelProduct struct {
-	ProductID string
-	Name      string
-	Quantity  int
-	Price     float64
+	ProductID string  `json:"product_id"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
 }
 
 type CartReadModel struct {
-	CustomerID string
-	Products   []CartReadModelProduct
-	TotalPrice float64
+	CustomerID string                 `json:"customer_id"`
+	Products   []CartReadModelProduct `json:"products"`
+	TotalPrice float64                `json:"total_price"`
 }
 
 func NewCartReadModel(customerID string, products []CartReadModelProduct) CartReadModel {
@@ -36,4 +36,8 @@ func (c CartReadModel) calculateTotalPrice() float64 {
 	totalPriceTwoDecimals := math.Round(totalPrice*100) / 100
 
 	return totalPriceTwoDecimals
+}
+
+func (c CartReadModel) IsZero() bool {
+	return c.CustomerID == ""
 }

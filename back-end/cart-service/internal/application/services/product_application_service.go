@@ -17,12 +17,13 @@ var _ ProductApplicationService = (*productApplicationService)(nil)
 
 type productApplicationService struct {
 	productRepository repositories.ProductRepository
+	cartRepository    repositories.CartRepository
 	logger            zerolog.Logger
 	natsClient        nats.NatsClient
 }
 
 type ProductApplicationService interface {
-	GetCart(ctx context.Context, customerID string) (cartEntity.Cart, error)
+	GetCart(ctx context.Context, customerID string) (cartEntity.CartReadModel, error)
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
 	AddProductToCart(ctx context.Context, productID string, quantity int, customerID string) error
 	DeleteProduct(ctx context.Context) error
@@ -30,10 +31,16 @@ type ProductApplicationService interface {
 
 func NewProductApplicationService(
 	productRepository repositories.ProductRepository,
+	cartRepository repositories.CartRepository,
 	logger zerolog.Logger,
 	natsClient nats.NatsClient,
 ) productApplicationService {
-	return productApplicationService{productRepository, logger, natsClient}
+	return productApplicationService{
+		productRepository: productRepository,
+		cartRepository:    cartRepository,
+		logger:            logger,
+		natsClient:        natsClient,
+	}
 }
 
 func (p productApplicationService) CreateProduct(
@@ -100,10 +107,12 @@ func (p productApplicationService) AddProductToCart(
 	return nil
 }
 
-func (p productApplicationService) GetCart(ctx context.Context, customerID string) (cartEntity.Cart, error) {
-	panic("implement me")
-
-	return cartEntity.Cart{}, nil
+func (p productApplicationService) GetCart(ctx context.Context, customerID string) (cartEntity.CartReadModel, error) {
+	cart, err := p.cartRepository.GetByCustomerID(ctx, customerID)
+	if err != nil {
+		return cartEntity.CartReadModel{}, fmt.Errorf("productApplicationService GetCart -> cartRepository.GetByCustomerID: %w", err)
+	}
+	return cart, nil
 }
 
 func (p productApplicationService) DeleteProduct(ctx context.Context) error {
