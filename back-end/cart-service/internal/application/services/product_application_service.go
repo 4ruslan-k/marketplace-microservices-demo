@@ -66,39 +66,22 @@ func (p productApplicationService) AddProductToCart(
 	quantity int,
 	customerID string,
 ) error {
-	product, err := p.productRepository.GetProductByID(ctx, productID)
-	if product.IsZero() {
-		return ErrInvalidEmailFormat
+	updateOperation := func(cart cartEntity.Cart) (cartEntity.Cart, error) {
+
+		cart, err := cart.AddProductToCart(
+			cartEntity.CartProduct{
+				ProductID: productID,
+				Quantity:  quantity,
+			},
+		)
+
+		if err != nil {
+			return cartEntity.Cart{}, fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
+		}
+		return cart, nil
 	}
 
-	products := []cartEntity.CartProduct{
-		{
-			ProductID: productID,
-			Quantity:  quantity,
-		},
-	}
-
-	cart, err := cartEntity.NewCart(cartEntity.CreateCartParams{
-		CustomerID: customerID,
-		Products:   products,
-	})
-
-	if err != nil {
-		return fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
-	}
-
-	cart, err = cart.AddProductToCart(
-		cartEntity.CartProduct{
-			ProductID: productID,
-			Quantity:  quantity,
-		},
-	)
-
-	if err != nil {
-		return fmt.Errorf("productApplicationService AddProductToCart -> cartEntity.NewCart: %w", err)
-	}
-
-	// TODO: save card state using repository
+	err := p.cartRepository.SaveCart(ctx, customerID, updateOperation)
 
 	if err != nil {
 		return fmt.Errorf("productApplicationService AddProductToCart -> productRepository.GetProductByID: %w", err)
