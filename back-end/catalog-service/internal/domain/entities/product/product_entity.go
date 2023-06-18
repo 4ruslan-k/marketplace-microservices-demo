@@ -9,6 +9,7 @@ import (
 
 var ErrInvalidProductName = customErrors.NewIncorrectInputError("products/invalid_name", "Invalid product name")
 var ErrInvalidProductPrice = customErrors.NewIncorrectInputError("products/invalid_price", "Invalid product name")
+var ErrInvalidProductQuantity = customErrors.NewIncorrectInputError("products/invalid_quantity", "Invalid product quantity")
 
 type Product struct {
 	id        string
@@ -23,6 +24,12 @@ type CreateProductParams struct {
 	Name     string
 	Price    float64
 	Quantity int
+}
+
+type UpdateProductParams struct {
+	Name     *string
+	Price    *float64
+	Quantity *int
 }
 
 func NewProduct(createProductParams CreateProductParams) (Product, error) {
@@ -58,6 +65,42 @@ func NewProductFromDatabase(id, name string, price float64, quantity int, create
 	}
 
 	return product
+}
+
+func (p Product) Update(params UpdateProductParams) (Product, error) {
+	var isUpdated bool
+	if params.Name != nil {
+		if *params.Name == "" {
+			return Product{}, ErrInvalidProductName
+		}
+		p.name = *params.Name
+		isUpdated = true
+
+	}
+
+	if params.Price != nil {
+		if *params.Price <= 0 {
+			return Product{}, ErrInvalidProductPrice
+		}
+		p.price = *params.Price
+		isUpdated = true
+
+	}
+
+	if params.Quantity != nil {
+		if *params.Quantity < 0 {
+			return Product{}, ErrInvalidProductQuantity
+		}
+		p.quantity = *params.Quantity
+		isUpdated = true
+
+	}
+
+	if isUpdated {
+		p.updatedAt = time.Now()
+	}
+
+	return p, nil
 }
 
 func (p Product) ID() string {

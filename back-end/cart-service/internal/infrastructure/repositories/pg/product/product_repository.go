@@ -102,3 +102,19 @@ func (r *productPGRepository) DeleteProductByID(ctx context.Context, productID s
 
 	return nil
 }
+
+func (r *productPGRepository) UpdateProductByID(
+	ctx context.Context,
+	updatedProduct productEntity.Product,
+) error {
+	var dbProduct ProductModel
+
+	productModel := dbProduct.toDB(updatedProduct)
+
+	_, err := r.db.NewUpdate().Model(&productModel).Where("id = ?", updatedProduct.ID()).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("productPGRepository UpdateProductByID -> r.db.NewUpdate(): %w", err)
+	}
+
+	return nil
+}

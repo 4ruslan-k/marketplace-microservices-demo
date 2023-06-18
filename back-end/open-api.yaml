@@ -292,6 +292,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+    patch:
+      tags:
+        - product
+      summary: Updates a product
+      operationId: updateProduct
+      requestBody:
+        description: Creates a product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreationInput'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
     delete:
         tags:
           - product
@@ -465,6 +483,22 @@ components:
       type: string
       example: 563674
     ProductCreationInput:
+      type: object
+      required:
+      - name
+      - price
+      - quantity
+      properties:
+        name:
+          type: string
+          example: Banana
+        price:
+          type: number
+          example: 2.55
+        quantity:
+          type: integer
+          example: 2
+    ProductUpdateInput:
       type: object
       properties:
         name:

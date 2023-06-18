@@ -44,7 +44,7 @@ func (p ProductModel) toEntity() productEntity.Product {
 	return product
 }
 
-func toDB(p productEntity.Product) (ProductModel, error) {
+func toDB(p productEntity.Product) ProductModel {
 	return ProductModel{
 		ID:        p.ID(),
 		Name:      p.Name(),
@@ -52,7 +52,7 @@ func toDB(p productEntity.Product) (ProductModel, error) {
 		Quantity:  p.Quantity(),
 		CreatedAt: p.CreatedAt(),
 		UpdatedAt: p.UpdatedAt(),
-	}, nil
+	}
 }
 
 func NewProductRepository(sql *bun.DB, logger zerolog.Logger) *productPGRepository {
@@ -60,11 +60,9 @@ func NewProductRepository(sql *bun.DB, logger zerolog.Logger) *productPGReposito
 }
 
 func (r *productPGRepository) SaveProduct(ctx context.Context, u productEntity.Product) error {
-	dbProduct, err := toDB(u)
-	if err != nil {
-		return err
-	}
-	_, err = r.db.NewInsert().Model(&dbProduct).Exec(ctx)
+	dbProduct := toDB(u)
+
+	_, err := r.db.NewInsert().Model(&dbProduct).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -121,6 +119,20 @@ func (r *productPGRepository) DeleteProductByID(ctx context.Context, productID s
 	_, err := r.db.NewDelete().Model(&product).Where("id = ?", productID).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("productPGRepository DeleteProductByID -> NewDelete: %w", err)
+	}
+
+	return nil
+}
+
+func (r *productPGRepository) UpdateProductByID(
+	ctx context.Context,
+	updatedProduct productEntity.Product,
+) error {
+	productModel := toDB(updatedProduct)
+
+	_, err := r.db.NewUpdate().Model(&productModel).Where("id = ?", updatedProduct.ID()).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("productPGRepository UpdateProductByID -> r.db.NewUpdate(): %w", err)
 	}
 
 	return nil

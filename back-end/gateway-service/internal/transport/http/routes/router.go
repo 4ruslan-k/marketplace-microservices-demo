@@ -86,6 +86,7 @@ func NewRouter(
 	v1.GET("/products", authenticate, catalogServiceProxy)
 	v1.GET("/products/:productID", authenticate, catalogServiceProxy)
 	v1.DELETE("/products/:productID", authenticate, catalogServiceProxy)
+	v1.PATCH("/products/:productID", authenticate, catalogServiceProxy)
 
 	// cart
 	v1.PATCH("/cart/products", authenticate, cartServiceProxy)

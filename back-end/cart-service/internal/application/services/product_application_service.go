@@ -26,6 +26,7 @@ type ProductApplicationService interface {
 	GetCart(ctx context.Context, customerID string) (cartEntity.CartReadModel, error)
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
 	DeleteProduct(ctx context.Context, productID string) error
+	UpdateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
 	UpdateProductsInCart(ctx context.Context, productID string, quantity int, customerID string) error
 }
 
@@ -102,6 +103,21 @@ func (p productApplicationService) DeleteProduct(ctx context.Context, productID 
 	err := p.productRepository.DeleteProductByID(ctx, productID)
 	if err != nil {
 		return fmt.Errorf("productApplicationService DeleteProduct -> p.productRepository.DeleteProductByID: %w", err)
+	}
+	return nil
+}
+
+func (p productApplicationService) UpdateProduct(
+	ctx context.Context,
+	createProductParams productEntity.CreateProductParams,
+) error {
+	product, err := productEntity.NewProduct(createProductParams)
+	if err != nil {
+		return fmt.Errorf("productApplicationService CreateProduct ->  productEntity.NewProduct: %w", err)
+	}
+	err = p.productRepository.UpdateProductByID(ctx, product)
+	if err != nil {
+		return fmt.Errorf("productApplicationService CreateProduct -> productRepository.CreateProduct: %w", err)
 	}
 	return nil
 }

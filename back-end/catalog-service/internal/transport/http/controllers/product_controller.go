@@ -42,7 +42,11 @@ func (h *ProductController) CreateProduct(c *gin.Context) {
 
 	err := h.ApplicationService.CreateProduct(
 		c.Request.Context(),
-		productEntity.CreateProductParams{Name: createProductInput.Name, Price: createProductInput.Price},
+		productEntity.CreateProductParams{
+			Name:     createProductInput.Name,
+			Price:    createProductInput.Price,
+			Quantity: createProductInput.Quantity,
+		},
 	)
 
 	if err != nil {
@@ -92,6 +96,38 @@ func (h *ProductController) DeleteProductByID(c *gin.Context) {
 		return
 	}
 	err := h.ApplicationService.DeleteProductByID(c.Request.Context(), params.ProductID)
+
+	if err != nil {
+		httpErrors.RespondWithError(c, err)
+		return
+	}
+	dto.HandleOkResponse(c)
+}
+
+// DeleteProductByID deletes a product
+func (h *ProductController) UpdateProductByID(c *gin.Context) {
+	var params struct {
+		ProductID string `uri:"productID" binding:"required,uuid"`
+	}
+	if err := c.ShouldBindUri(&params); err != nil {
+		httpErrors.BadRequest(c, err.Error())
+		return
+	}
+	var updateProductInput dto.UpdateProductInput
+	if err := c.ShouldBindJSON(&updateProductInput); err != nil {
+		httpErrors.BadRequest(c, err.Error())
+		return
+	}
+
+	err := h.ApplicationService.UpdateProductByID(
+		c.Request.Context(),
+		params.ProductID,
+		productEntity.UpdateProductParams{
+			Name:     updateProductInput.Name,
+			Price:    updateProductInput.Price,
+			Quantity: updateProductInput.Quantity,
+		},
+	)
 
 	if err != nil {
 		httpErrors.RespondWithError(c, err)

@@ -35,9 +35,19 @@ type ProductDeletedEvent struct {
 	ID string `json:"id"`
 }
 
+type ProductUpdatedEvent struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Price     float64   `json:"price"`
+	Quantity  int       `json:"quantity"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 const (
 	productCreatedSubject             = "products.created"
 	productDeletedSubject             = "products.deleted"
+	productUpdatedSubject             = "products.updated"
 	productCreatedDurableConsumerName = "cart-service-product-created"
 	productStream                     = "products"
 )
@@ -47,6 +57,7 @@ type ProductApplicationService interface {
 	GetProducts(ctx context.Context) ([]productEntity.Product, error)
 	GetProductByID(ctx context.Context, productID string) (productEntity.Product, error)
 	DeleteProductByID(ctx context.Context, productID string) error
+	UpdateProductByID(ctx context.Context, productID string, productParams productEntity.UpdateProductParams) error
 }
 
 func NewProductApplicationService(
@@ -100,7 +111,7 @@ func (u productApplicationService) GetProducts(
 	return products, nil
 }
 
-// Fetches products
+// Fetches a product by ID
 func (u productApplicationService) GetProductByID(
 	ctx context.Context,
 	productID string,
@@ -116,7 +127,7 @@ func (u productApplicationService) GetProductByID(
 	return product, nil
 }
 
-// Deletes product
+// Deletes product by ID
 func (u productApplicationService) DeleteProductByID(
 	ctx context.Context,
 	productID string,
@@ -132,5 +143,38 @@ func (u productApplicationService) DeleteProductByID(
 		return err
 	}
 	u.natsClient.PublishMessage(productDeletedSubject, string(bytes))
+	return nil
+}
+
+// Updates product by ID
+func (u productApplicationService) UpdateProductByID(ctx context.Context, productID string, productParams productEntity.UpdateProductParams) error {
+	product, err := u.productRepository.GetProductByID(ctx, productID)
+	if product.IsZero() {
+		return customErrors.NewNotFoundError("products/not_found", "product not found")
+	}
+	if err != nil {
+		return fmt.Errorf("productApplicationService -> UpdateProductByID - u.productRepository.GetProductByID: %w", err)
+	}
+	product, err = product.Update(productParams)
+	if err != nil {
+		return fmt.Errorf("productApplicationService -> UpdateProductByID - product.Update: %w", err)
+	}
+
+	err = u.productRepository.UpdateProductByID(ctx, product)
+	if err != nil {
+		return fmt.Errorf("productApplicationService -> UpdateProductByID - u.productRepository.UpdateProductByID: %w", err)
+	}
+	bytes, err := json.Marshal(ProductUpdatedEvent{
+		ID:        productID,
+		Name:      product.Name(),
+		Price:     product.Price(),
+		Quantity:  product.Quantity(),
+		CreatedAt: product.CreatedAt(),
+		UpdatedAt: product.UpdatedAt(),
+	})
+	if err != nil {
+		return err
+	}
+	u.natsClient.PublishMessage(productUpdatedSubject, string(bytes))
 	return nil
 }

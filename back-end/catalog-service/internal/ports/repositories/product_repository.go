@@ -10,4 +10,5 @@ type ProductRepository interface {
 	GetProducts(ctx context.Context) ([]productEntity.Product, error)
 	GetProductByID(ctx context.Context, productID string) (productEntity.Product, error)
 	DeleteProductByID(ctx context.Context, productID string) error
+	UpdateProductByID(ctx context.Context, product productEntity.Product) error
 }

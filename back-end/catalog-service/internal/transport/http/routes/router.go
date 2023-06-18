@@ -29,4 +29,5 @@ func NewRouter(
 	v1.GET("/products", r.GetProducts)
 	v1.GET("/products/:productID", r.GetProductByID)
 	v1.DELETE("/products/:productID", r.DeleteProductByID)
+	v1.PATCH("/products/:productID", r.UpdateProductByID)
 }

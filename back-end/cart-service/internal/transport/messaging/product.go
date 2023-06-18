@@ -17,8 +17,10 @@ import (
 const (
 	productCreatedSubject             = "products.created"
 	productDeletedSubject             = "products.deleted"
+	productUpdatedSubject             = "products.updated"
 	productCreatedDurableConsumerName = "cart-service-product-created"
 	productDeletedDurableConsumerName = "cart-service-product-deleted"
+	productUpdatedDurableConsumerName = "cart-service-product-updated"
 	productStream                     = "products"
 )
 
@@ -54,6 +56,7 @@ func (d *productMessagingHandlers) Init() {
 
 	d.ProductCreatedListener()
 	d.ProductDeletedListener()
+	d.ProductUpdatedListener()
 }
 
 type ProductCreatedEvent struct {
@@ -67,6 +70,15 @@ type ProductCreatedEvent struct {
 
 type ProductDeletedEvent struct {
 	ID string `json:"id"`
+}
+
+type ProductUpdatedEvent struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Price     float64   `json:"price"`
+	Quantity  int       `json:"quantity"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (d *productMessagingHandlers) ProductCreatedListener() {
@@ -118,4 +130,33 @@ func (d *productMessagingHandlers) ProductDeletedListener() {
 		return nil
 	}
 	d.natsClient.SubscribeDurable(productDeletedSubject, productStream, productDeletedDurableConsumerName, handler)
+}
+
+func (d *productMessagingHandlers) ProductUpdatedListener() {
+	d.logger.Info().Msg("ProductUpdatedListener initialized")
+	handler := func(n *nats.Msg) error {
+		messageData := n.Data
+		log.Info().Msg("ProductUpdatedListener -> Received a message: " + string(messageData))
+
+		var productUpdatedEvent ProductUpdatedEvent
+		err := json.Unmarshal(messageData, &productUpdatedEvent)
+		if err != nil {
+			log.Error().Msg("ProductUpdatedListener -> Error in unmarshalling the message")
+			return err
+		}
+		err = d.appService.UpdateProduct(context.Background(), productEntity.CreateProductParams{
+			ID:        productUpdatedEvent.ID,
+			Name:      productUpdatedEvent.Name,
+			Price:     productUpdatedEvent.Price,
+			Quantity:  productUpdatedEvent.Quantity,
+			CreatedAt: productUpdatedEvent.CreatedAt,
+			UpdatedAt: productUpdatedEvent.UpdatedAt,
+		})
+		if err != nil {
+			log.Error().Err(err).Msg("ProductUpdatedListener -> d.appService.CreateProduct")
+			return err
+		}
+		return nil
+	}
+	d.natsClient.SubscribeDurable(productUpdatedSubject, productStream, productUpdatedDurableConsumerName, handler)
 }
