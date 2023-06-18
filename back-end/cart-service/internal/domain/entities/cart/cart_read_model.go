@@ -12,6 +12,7 @@ type CartReadModelProduct struct {
 }
 
 type CartReadModel struct {
+	Type       string                 `json:"type"`
 	CustomerID string                 `json:"customerId"`
 	Products   []CartReadModelProduct `json:"products"`
 	TotalPrice float64                `json:"totalPrice"`
@@ -19,6 +20,7 @@ type CartReadModel struct {
 
 func NewCartReadModel(customerID string, products []CartReadModelProduct) CartReadModel {
 	cart := CartReadModel{
+		Type:       "cart",
 		CustomerID: customerID,
 		Products:   products,
 	}
