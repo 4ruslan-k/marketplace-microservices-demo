@@ -290,6 +290,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+    delete:
+        tags:
+          - product
+        summary: Deletes a product
+        operationId: deleteProduct
+        responses:
+          default:
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponseSuccess'
   /users/me/notifications:
     get:
       tags:

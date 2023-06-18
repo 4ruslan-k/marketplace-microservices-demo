@@ -31,8 +31,13 @@ type ProductCreatedEvent struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type ProductDeletedEvent struct {
+	ID string `json:"id"`
+}
+
 const (
 	productCreatedSubject             = "products.created"
+	productDeletedSubject             = "products.deleted"
 	productCreatedDurableConsumerName = "cart-service-product-created"
 	productStream                     = "products"
 )
@@ -111,15 +116,21 @@ func (u productApplicationService) GetProductByID(
 	return product, nil
 }
 
-// Fetches products
+// Deletes product
 func (u productApplicationService) DeleteProductByID(
 	ctx context.Context,
 	productID string,
 ) error {
 	err := u.productRepository.DeleteProductByID(ctx, productID)
 	if err != nil {
-		return fmt.Errorf("productApplicationService -> GetProducts - u.productRepository.DeleteProductByID: %w", err)
+		return fmt.Errorf("productApplicationService -> DeleteProductByID - u.productRepository.DeleteProductByID: %w", err)
 	}
-
+	bytes, err := json.Marshal(ProductDeletedEvent{
+		ID: productID,
+	})
+	if err != nil {
+		return err
+	}
+	u.natsClient.PublishMessage(productDeletedSubject, string(bytes))
 	return nil
 }

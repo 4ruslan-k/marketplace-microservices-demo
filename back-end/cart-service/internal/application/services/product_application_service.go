@@ -25,6 +25,7 @@ type productApplicationService struct {
 type ProductApplicationService interface {
 	GetCart(ctx context.Context, customerID string) (cartEntity.CartReadModel, error)
 	CreateProduct(ctx context.Context, createProductParams productEntity.CreateProductParams) error
+	DeleteProduct(ctx context.Context, productID string) error
 	UpdateProductsInCart(ctx context.Context, productID string, quantity int, customerID string) error
 }
 
@@ -95,4 +96,12 @@ func (p productApplicationService) GetCart(ctx context.Context, customerID strin
 		return cartEntity.CartReadModel{}, fmt.Errorf("productApplicationService GetCart -> cartRepository.GetByCustomerID: %w", err)
 	}
 	return cart, nil
+}
+
+func (p productApplicationService) DeleteProduct(ctx context.Context, productID string) error {
+	err := p.productRepository.DeleteProductByID(ctx, productID)
+	if err != nil {
+		return fmt.Errorf("productApplicationService DeleteProduct -> p.productRepository.DeleteProductByID: %w", err)
+	}
+	return nil
 }

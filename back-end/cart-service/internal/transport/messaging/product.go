@@ -16,7 +16,9 @@ import (
 
 const (
 	productCreatedSubject             = "products.created"
+	productDeletedSubject             = "products.deleted"
 	productCreatedDurableConsumerName = "cart-service-product-created"
+	productDeletedDurableConsumerName = "cart-service-product-deleted"
 	productStream                     = "products"
 )
 
@@ -51,6 +53,7 @@ func (d *productMessagingHandlers) Init() {
 	}
 
 	d.ProductCreatedListener()
+	d.ProductDeletedListener()
 }
 
 type ProductCreatedEvent struct {
@@ -62,16 +65,20 @@ type ProductCreatedEvent struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type ProductDeletedEvent struct {
+	ID string `json:"id"`
+}
+
 func (d *productMessagingHandlers) ProductCreatedListener() {
-	d.logger.Info().Msg("ProductListener initialized")
+	d.logger.Info().Msg("ProductCreatedListener initialized")
 	handler := func(n *nats.Msg) error {
 		messageData := n.Data
-		log.Info().Msg("ProductListener -> Received a message: " + string(messageData))
+		log.Info().Msg("ProductCreatedListener -> Received a message: " + string(messageData))
 
 		var productEvent ProductCreatedEvent
 		err := json.Unmarshal(messageData, &productEvent)
 		if err != nil {
-			log.Error().Msg("ProductListener -> Error in unmarshalling the message")
+			log.Error().Msg("ProductCreatedListener -> Error in unmarshalling the message")
 			return err
 		}
 		err = d.appService.CreateProduct(context.Background(), productEntity.CreateProductParams{
@@ -83,10 +90,32 @@ func (d *productMessagingHandlers) ProductCreatedListener() {
 			UpdatedAt: productEvent.UpdatedAt,
 		})
 		if err != nil {
-			log.Error().Err(err).Msg("ProductListener -> d.appService.CreateProduct")
+			log.Error().Err(err).Msg("ProductCreatedListener -> d.appService.CreateProduct")
 			return err
 		}
 		return nil
 	}
 	d.natsClient.SubscribeDurable(productCreatedSubject, productStream, productCreatedDurableConsumerName, handler)
+}
+
+func (d *productMessagingHandlers) ProductDeletedListener() {
+	d.logger.Info().Msg("ProductDeletedListener initialized")
+	handler := func(n *nats.Msg) error {
+		messageData := n.Data
+		log.Info().Msg("ProductDeletedListener -> Received a message: " + string(messageData))
+
+		var productDeletedEvent ProductDeletedEvent
+		err := json.Unmarshal(messageData, &productDeletedEvent)
+		if err != nil {
+			log.Error().Msg("ProductDeletedListener -> Error in unmarshalling the message")
+			return err
+		}
+		err = d.appService.DeleteProduct(context.Background(), productDeletedEvent.ID)
+		if err != nil {
+			log.Error().Err(err).Msg("ProductDeletedListener -> d.appService.CreateProduct")
+			return err
+		}
+		return nil
+	}
+	d.natsClient.SubscribeDurable(productDeletedSubject, productStream, productDeletedDurableConsumerName, handler)
 }

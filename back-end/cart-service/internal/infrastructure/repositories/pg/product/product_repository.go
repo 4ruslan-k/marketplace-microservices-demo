@@ -92,3 +92,13 @@ func (r *productPGRepository) GetProductByID(ctx context.Context, id string) (pr
 	}
 	return product, nil
 }
+
+func (r *productPGRepository) DeleteProductByID(ctx context.Context, productID string) error {
+	var customer ProductModel
+	_, err := r.db.NewDelete().Model(&customer).Where("id = ?", productID).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("productPGRepository Delete -> NewDelete: %w", err)
+	}
+
+	return nil
+}
