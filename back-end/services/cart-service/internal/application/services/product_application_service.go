@@ -6,7 +6,8 @@ import (
 
 	cartEntity "cart_service/internal/domain/entities/cart"
 	productEntity "cart_service/internal/domain/entities/product"
-	"cart_service/internal/ports/repositories"
+	cartRepo "cart_service/internal/repositories/cart"
+	productRepo "cart_service/internal/repositories/product"
 	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 
@@ -16,8 +17,8 @@ import (
 var _ ProductApplicationService = (*productApplicationService)(nil)
 
 type productApplicationService struct {
-	productRepository repositories.ProductRepository
-	cartRepository    repositories.CartRepository
+	productRepository productRepo.ProductRepository
+	cartRepository    cartRepo.CartRepository
 	logger            zerolog.Logger
 	natsClient        nats.NatsClient
 }
@@ -31,8 +32,8 @@ type ProductApplicationService interface {
 }
 
 func NewProductApplicationService(
-	productRepository repositories.ProductRepository,
-	cartRepository repositories.CartRepository,
+	productRepository productRepo.ProductRepository,
+	cartRepository cartRepo.CartRepository,
 	logger zerolog.Logger,
 	natsClient nats.NatsClient,
 ) productApplicationService {

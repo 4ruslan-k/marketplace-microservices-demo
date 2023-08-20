@@ -1,10 +1,10 @@
-package domainservices
+package repository
 
 import (
 	"context"
 	"fmt"
 	userEntity "notification_service/internal/domain/entities/user"
-	"notification_service/internal/ports/repositories"
+	repository "notification_service/internal/repositories/user"
 
 	"github.com/rs/zerolog"
 )
@@ -15,12 +15,12 @@ type UserDomainService interface {
 
 type userService struct {
 	logger         zerolog.Logger
-	userRepository repositories.UserRepository
+	userRepository repository.UserRepository
 }
 
 func NewUserService(
 	logger zerolog.Logger,
-	userRepository repositories.UserRepository,
+	userRepository repository.UserRepository,
 ) *userService {
 	return &userService{logger, userRepository}
 }

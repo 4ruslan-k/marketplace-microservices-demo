@@ -17,8 +17,8 @@ import (
 
 	"notification_service/config"
 	notificationEntity "notification_service/internal/domain/entities/notification"
-	pgrepositories "notification_service/internal/infrastructure/repositories/pg/notification"
-	repo "notification_service/internal/ports/repositories"
+	notificationRepo "notification_service/internal/repositories/notification"
+	notificationRepoPg "notification_service/internal/repositories/notification/pg"
 	"notification_service/migrate/migrations"
 	pgStorage "shared/storage/pg"
 
@@ -69,13 +69,13 @@ func NewTestApplicationService(
 	pg *bun.DB,
 	logger zerolog.Logger,
 	t *testing.T,
-) (applicationServices.NotificationApplicationService, repo.NotificationsRepository) {
+) (applicationServices.NotificationApplicationService, notificationRepo.NotificationsRepository) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockNatsClient := mocks.NewMockNatsClient(mockCtrl)
 	mockNatsClient.EXPECT().CreateStream(gomock.Any(), gomock.Any()).MinTimes(0)
 	mockNatsClient.EXPECT().PublishMessageEphemeral(gomock.Any(), gomock.Any()).MinTimes(0)
-	notificationRepository := pgrepositories.NewNotificationRepository(pg, logger)
+	notificationRepository := notificationRepoPg.NewNotificationRepository(pg, logger)
 	applicationService := applicationServices.NewNotificationApplicationService(
 		notificationRepository,
 		logger,

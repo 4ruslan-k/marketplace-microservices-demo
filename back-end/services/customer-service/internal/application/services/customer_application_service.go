@@ -4,7 +4,7 @@ import (
 	"context"
 	customerEntity "customer_service/internal/domain/entities/customer"
 	domainServices "customer_service/internal/domain/services"
-	"customer_service/internal/ports/repositories"
+	repository "customer_service/internal/repositories/customer"
 	"fmt"
 	"time"
 
@@ -22,7 +22,7 @@ var ErrCustomerNotFound = customErrors.NewIncorrectInputError("no_customer", "Us
 var _ CustomerApplicationService = (*customerApplicationService)(nil)
 
 type customerApplicationService struct {
-	customerRepository    repositories.CustomerRepository
+	customerRepository    repository.CustomerRepository
 	customerDomainService domainServices.CustomerDomainService
 	logger                zerolog.Logger
 }
@@ -46,7 +46,7 @@ type CustomerApplicationService interface {
 }
 
 func NewCustomerApplicationService(
-	customerRepository repositories.CustomerRepository,
+	customerRepository repository.CustomerRepository,
 	logger zerolog.Logger,
 	customerDomainService domainServices.CustomerDomainService,
 ) CustomerApplicationService {
@@ -91,9 +91,6 @@ func (u customerApplicationService) UpdateCustomer(
 		customer.SetName(updateCustomerInput.Name)
 	}
 	customer.SetUpdatedAt(time.Now())
-	fmt.Printf("update custoemr %+v\n", customer)
-	fmt.Printf("update custoemr %+v\n", customer)
-	fmt.Printf("update custoemr %+v\n", customer)
 	err = u.customerRepository.Update(ctx, *customer)
 	if err != nil {
 		return fmt.Errorf("CustomerApplicationService -> UpdateCustomer - u.customerRepository.Update: %w", err)

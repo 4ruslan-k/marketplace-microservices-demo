@@ -3,7 +3,7 @@ package domainservices
 import (
 	"context"
 	customerEntity "customer_service/internal/domain/entities/customer"
-	"customer_service/internal/ports/repositories"
+	repository "customer_service/internal/repositories/customer"
 	"fmt"
 
 	"github.com/rs/zerolog"
@@ -15,12 +15,12 @@ type CustomerDomainService interface {
 
 type customerService struct {
 	logger             zerolog.Logger
-	customerRepository repositories.CustomerRepository
+	customerRepository repository.CustomerRepository
 }
 
 func NewCustomerService(
 	logger zerolog.Logger,
-	customerRepository repositories.CustomerRepository,
+	customerRepository repository.CustomerRepository,
 ) *customerService {
 	return &customerService{logger, customerRepository}
 }

@@ -12,7 +12,8 @@ import (
 
 	applicationServices "authentication_service/internal/application/services"
 	domainServices "authentication_service/internal/domain/services"
-	mongoRepositories "authentication_service/internal/infrastructure/repositories/mongodb"
+	authRepository "authentication_service/internal/repositories/authentication/mongo"
+	userRepository "authentication_service/internal/repositories/user/mongo"
 	httpServ "authentication_service/internal/transport/http"
 	middlewares "authentication_service/internal/transport/http/middlewares"
 	nats "shared/messaging/nats"
@@ -30,8 +31,8 @@ func buildDependencies() (*httpserver.Server, error) {
 
 	mongo := storage.NewMongoClient(logger, config)
 
-	authenticationRepo := mongoRepositories.NewAuthenticationRepository(mongo, logger)
-	userRepo := mongoRepositories.NewUserRepository(mongo, logger)
+	authenticationRepo := authRepository.NewAuthenticationRepository(mongo, logger)
+	userRepo := userRepository.NewUserRepository(mongo, logger)
 
 	authenticationDomainService := domainServices.NewAuthenticationService(logger, authenticationRepo)
 	userDomainService := domainServices.NewUserService(logger, authenticationDomainService, userRepo)

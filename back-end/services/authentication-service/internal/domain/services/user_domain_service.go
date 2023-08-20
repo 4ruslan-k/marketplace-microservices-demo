@@ -2,7 +2,7 @@ package domainservices
 
 import (
 	userEntity "authentication_service/internal/domain/entities/user"
-	"authentication_service/internal/ports/repositories"
+	repository "authentication_service/internal/repositories/user"
 	"context"
 	"fmt"
 
@@ -22,13 +22,13 @@ type UserDomainService interface {
 type userService struct {
 	logger                      zerolog.Logger
 	authenticationDomainService AuthenticationDomainService
-	userRepository              repositories.UserRepository
+	userRepository              repository.UserRepository
 }
 
 func NewUserService(
 	logger zerolog.Logger,
 	authenticationDomainService AuthenticationDomainService,
-	userRepository repositories.UserRepository,
+	userRepository repository.UserRepository,
 ) *userService {
 	return &userService{logger, authenticationDomainService, userRepository}
 }

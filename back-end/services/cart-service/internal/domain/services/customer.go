@@ -2,7 +2,7 @@ package domainservices
 
 import (
 	customerEntity "cart_service/internal/domain/entities/customer"
-	"cart_service/internal/ports/repositories"
+	repositories "cart_service/internal/repositories/customer"
 	"context"
 	"fmt"
 

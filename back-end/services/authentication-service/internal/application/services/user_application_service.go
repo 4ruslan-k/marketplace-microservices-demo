@@ -4,7 +4,8 @@ import (
 	socialAccountEntity "authentication_service/internal/domain/entities/social_account"
 	userEntity "authentication_service/internal/domain/entities/user"
 	domainServices "authentication_service/internal/domain/services"
-	"authentication_service/internal/ports/repositories"
+	authRepository "authentication_service/internal/repositories/authentication"
+	userRepository "authentication_service/internal/repositories/user"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -33,8 +34,8 @@ var (
 var _ UserApplicationService = (*userApplicationService)(nil)
 
 type userApplicationService struct {
-	userRepository              repositories.UserRepository
-	authenticationRepository    repositories.AuthenticationRepository
+	userRepository              userRepository.UserRepository
+	authenticationRepository    authRepository.AuthenticationRepository
 	userDomainService           domainServices.UserDomainService
 	logger                      zerolog.Logger
 	authenticationDomainService domainServices.AuthenticationDomainService
@@ -68,8 +69,8 @@ type UserApplicationService interface {
 }
 
 func NewUserApplicationService(
-	userRepository repositories.UserRepository,
-	authenticationRepository repositories.AuthenticationRepository,
+	userRepository userRepository.UserRepository,
+	authenticationRepository authRepository.AuthenticationRepository,
 	logger zerolog.Logger,
 	userDomainService domainServices.UserDomainService,
 	authenticationDomainService domainServices.AuthenticationDomainService,

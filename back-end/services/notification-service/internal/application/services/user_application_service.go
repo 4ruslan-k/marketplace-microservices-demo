@@ -5,7 +5,7 @@ import (
 	"fmt"
 	userEntity "notification_service/internal/domain/entities/user"
 	domainServices "notification_service/internal/domain/services"
-	"notification_service/internal/ports/repositories"
+	repository "notification_service/internal/repositories/user"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -22,7 +22,7 @@ var ErrUserNotFound = customErrors.NewIncorrectInputError("no_user", "User not f
 var _ UserApplicationService = (*userApplicationService)(nil)
 
 type userApplicationService struct {
-	userRepository    repositories.UserRepository
+	userRepository    repository.UserRepository
 	userDomainService domainServices.UserDomainService
 	logger            zerolog.Logger
 }
@@ -46,7 +46,7 @@ type UserApplicationService interface {
 }
 
 func NewUserApplicationService(
-	userRepository repositories.UserRepository,
+	userRepository repository.UserRepository,
 	logger zerolog.Logger,
 	userDomainService domainServices.UserDomainService,
 ) userApplicationService {

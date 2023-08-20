@@ -15,7 +15,7 @@ import (
 	"analytics_service/pkg/httpserver"
 
 	domainServices "analytics_service/internal/domain/services"
-	userInfraRepository "analytics_service/internal/infrastructure/repositories/pg/user"
+	repository "analytics_service/internal/repositories/user/pg"
 	nats "shared/messaging/nats"
 
 	messaging "analytics_service/internal/transport/messaging"
@@ -31,7 +31,7 @@ func buildDependencies() (messaging.UserMessagingHandlers, *httpserver.Server, e
 
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 
-	userRepo := userInfraRepository.NewUserRepository(pg, logger)
+	userRepo := repository.NewUserRepository(pg, logger)
 	userDomainService := domainServices.NewUserService(logger, userRepo)
 	nats := nats.NewNatsClient()
 

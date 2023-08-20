@@ -14,7 +14,8 @@ import (
 
 	"authentication_service/config"
 
-	mongoRepositories "authentication_service/internal/infrastructure/repositories/mongodb"
+	authRepository "authentication_service/internal/repositories/authentication/mongo"
+	userRepository "authentication_service/internal/repositories/user/mongo"
 	fixtures "authentication_service/internal/test/fixtures"
 	storage "authentication_service/pkg/storage/mongo"
 	testUtils "authentication_service/pkg/testutils"
@@ -25,7 +26,8 @@ import (
 	userEntity "authentication_service/internal/domain/entities/user"
 	domainServices "authentication_service/internal/domain/services"
 
-	repo "authentication_service/internal/ports/repositories"
+	authRepo "authentication_service/internal/repositories/authentication"
+	userRepo "authentication_service/internal/repositories/user"
 	middlewares "authentication_service/internal/transport/http/middlewares"
 	mocks "authentication_service/mocks"
 )
@@ -65,14 +67,14 @@ func NewTestApplicationService(
 	mongo *mongo.Database,
 	logger zerolog.Logger,
 	t *testing.T,
-) (applicationServices.UserApplicationService, repo.UserRepository, repo.AuthenticationRepository) {
+) (applicationServices.UserApplicationService, userRepo.UserRepository, authRepo.AuthenticationRepository) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockNatsClient := mocks.NewMockNatsClient(mockCtrl)
 	mockNatsClient.EXPECT().CreateStream(gomock.Any(), gomock.Any()).MinTimes(0)
 	mockNatsClient.EXPECT().PublishMessage(gomock.Any(), gomock.Any()).MinTimes(0)
-	userRepository := mongoRepositories.NewUserRepository(mongo, logger)
-	authenticationRepository := mongoRepositories.NewAuthenticationRepository(mongo, logger)
+	userRepository := userRepository.NewUserRepository(mongo, logger)
+	authenticationRepository := authRepository.NewAuthenticationRepository(mongo, logger)
 	authenticationDomainService := domainServices.NewAuthenticationService(logger, authenticationRepository)
 	userDomainService := domainServices.NewUserService(logger, authenticationDomainService, userRepository)
 	applicationService := applicationServices.NewUserApplicationService(

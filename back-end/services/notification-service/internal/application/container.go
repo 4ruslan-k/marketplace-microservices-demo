@@ -15,8 +15,8 @@ import (
 
 	applicationServices "notification_service/internal/application/services"
 	domainServices "notification_service/internal/domain/services"
-	notificationInfraRepository "notification_service/internal/infrastructure/repositories/pg/notification"
-	userInfraRepository "notification_service/internal/infrastructure/repositories/pg/user"
+	notificationRepository "notification_service/internal/repositories/notification/pg"
+	userRepository "notification_service/internal/repositories/user/pg"
 	nats "shared/messaging/nats"
 
 	messaging "notification_service/internal/transport/messaging"
@@ -36,8 +36,8 @@ func buildDependencies() (
 	}
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 	nats := nats.NewNatsClient()
-	userRepo := userInfraRepository.NewUserRepository(pg, logger)
-	notificationRepo := notificationInfraRepository.NewNotificationRepository(pg, logger)
+	userRepo := userRepository.NewUserRepository(pg, logger)
+	notificationRepo := notificationRepository.NewNotificationRepository(pg, logger)
 
 	userDomainService := domainServices.NewUserService(logger, userRepo)
 

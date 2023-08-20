@@ -2,7 +2,7 @@ package domainservices
 
 import (
 	passwordVerificationEntity "authentication_service/internal/domain/entities/password_verification_token"
-	"authentication_service/internal/ports/repositories"
+	repositories "authentication_service/internal/repositories/authentication"
 	"bytes"
 	"context"
 	"fmt"

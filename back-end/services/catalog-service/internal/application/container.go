@@ -12,7 +12,7 @@ import (
 
 	applicationServices "catalog_service/internal/application/services"
 
-	pgRepositories "catalog_service/internal/infrastructure/repositories/pg"
+	repository "catalog_service/internal/repositories/product/pg"
 	httpServ "catalog_service/internal/transport/http"
 	"catalog_service/pkg/httpserver"
 )
@@ -27,7 +27,7 @@ func buildDependencies() (*httpserver.Server, error) {
 	logger := zerolog.New(os.Stdout)
 	pgConn := pgStorage.NewClient(logger, pgStorage.Config{DSN: conf.PgDSN})
 	natsClient := nats.NewNatsClient()
-	productRepo := pgRepositories.NewProductRepository(pgConn, logger)
+	productRepo := repository.NewProductRepository(pgConn, logger)
 	productAppService := applicationServices.NewProductApplicationService(productRepo, logger, natsClient)
 	server := httpServ.NewHTTPServer(productAppService, gin.New(), logger, conf)
 

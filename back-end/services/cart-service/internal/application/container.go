@@ -14,9 +14,9 @@ import (
 
 	applicationServices "cart_service/internal/application/services"
 	domainServices "cart_service/internal/domain/services"
-	cartInfraRepository "cart_service/internal/infrastructure/repositories/pg/cart"
-	userInfraRepository "cart_service/internal/infrastructure/repositories/pg/customer"
-	productInfraRepository "cart_service/internal/infrastructure/repositories/pg/product"
+	cartInfraRepository "cart_service/internal/repositories/cart/pg"
+	userInfraRepository "cart_service/internal/repositories/customer/pg"
+	productInfraRepository "cart_service/internal/repositories/product/pg"
 	nats "shared/messaging/nats"
 
 	messaging "cart_service/internal/transport/messaging"

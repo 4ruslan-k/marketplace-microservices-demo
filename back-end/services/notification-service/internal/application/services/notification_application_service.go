@@ -8,7 +8,8 @@ import (
 
 	domainDto "notification_service/internal/application/dto"
 	notificationEntity "notification_service/internal/domain/entities/notification"
-	"notification_service/internal/ports/repositories"
+	repositories "notification_service/internal/repositories/notification"
+	repository "notification_service/internal/repositories/notification"
 	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 
@@ -23,7 +24,7 @@ var (
 var _ NotificationApplicationService = (*notificationApplicationService)(nil)
 
 type notificationApplicationService struct {
-	notificationRepository repositories.NotificationsRepository
+	notificationRepository repository.NotificationsRepository
 	logger                 zerolog.Logger
 	natsClient             nats.NatsClient
 }

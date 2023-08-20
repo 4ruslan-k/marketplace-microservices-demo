@@ -2,7 +2,7 @@ package applicationservices
 
 import (
 	productEntity "catalog_service/internal/domain/entities/product"
-	"catalog_service/internal/ports/repositories"
+	repository "catalog_service/internal/repositories/product"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -17,7 +17,7 @@ import (
 var _ ProductApplicationService = (*productApplicationService)(nil)
 
 type productApplicationService struct {
-	productRepository repositories.ProductRepository
+	productRepository repository.ProductRepository
 	logger            zerolog.Logger
 	natsClient        natsClient.NatsClient
 }
@@ -61,7 +61,7 @@ type ProductApplicationService interface {
 }
 
 func NewProductApplicationService(
-	productRepository repositories.ProductRepository,
+	productRepository repository.ProductRepository,
 	logger zerolog.Logger,
 	nats natsClient.NatsClient,
 ) *productApplicationService {
