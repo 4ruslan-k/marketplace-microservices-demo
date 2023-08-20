@@ -27,7 +27,7 @@ import (
 
 	repo "authentication_service/internal/ports/repositories"
 	middlewares "authentication_service/internal/transport/http/middlewares"
-	mocks "authentication_service/mocks/pkg/messaging/nats"
+	mocks "authentication_service/mocks"
 )
 
 var mongoURI string
