@@ -23,13 +23,14 @@ install-tools:
 	@echo "Installing mockgen"
 	@GOBIN=$(BIN_DIR) go install github.com/golang/mock/mockgen
 
-# .PHONY: run
-# run:
-# 	@ENV_FILE_PATH=$(ENV_FILE_PATH) $(binDir)/air -c .air_debug.toml
+.PHONY: run-air
+run:
+	@ENV_FILE_PATH=$(ENV_FILE_PATH) $(binDir)/air -c .air_debug.toml
 
 .PHONY: run
 run:
-	@ENV_FILE_PATH=$(ENV_FILE_PATH) go run $(binDir)/../cmd/app
+	@ENV_FILE_PATH=$(ENV_FILE_PATH) go run $(shell pwd)/cmd/app
+
 
 .PHONY: lint
 lint:
