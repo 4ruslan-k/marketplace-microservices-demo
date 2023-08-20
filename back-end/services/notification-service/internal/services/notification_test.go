@@ -22,7 +22,7 @@ import (
 	"notification_service/migrate/migrations"
 	pgStorage "shared/storage/pg"
 
-	applicationServices "notification_service/internal/application/services"
+	applicationServices "notification_service/internal/services"
 	mocks "notification_service/mocks/pkg/messaging/nats"
 )
 

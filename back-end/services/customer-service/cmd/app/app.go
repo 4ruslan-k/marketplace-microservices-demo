@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -8,23 +8,21 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"notification_service/pkg/httpserver"
-
-	socketServer "notification_service/internal/transport/http/socketio"
+	"customer_service/config"
 )
 
-func Run() {
+func run() {
+	_, err := config.NewConfig()
+	if err != nil {
+		log.Fatal().Err(err).Msg("config.NewConfig")
+	}
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	var httpServer *httpserver.Server
-	var socketServ *socketServer.SocketIOServer
 
-	userMessageHandlers, notificationMessageHandlers, socketServer, httpServer, err := buildDependencies()
 	// TODO: defer pg
+	userMessagingHandler, httpServer, err := buildDependencies()
 
-	userMessageHandlers.Init()
-	notificationMessageHandlers.Init()
-	socketServ = socketServer
+	userMessagingHandler.Init()
 
 	if err != nil {
 		log.Panic().Err(err).Msg("c.Invoke")
@@ -45,7 +43,5 @@ func Run() {
 	if err != nil {
 		log.Error().Err(err).Msg("app - Run - httpServer.Shutdown")
 	}
-
-	defer socketServ.Server.Close()
 
 }

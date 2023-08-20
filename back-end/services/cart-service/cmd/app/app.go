@@ -1,22 +1,26 @@
-package app
+package main
 
 import (
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"catalog_service/config"
+	"cart_service/pkg/httpserver"
 )
 
-func Run() {
-	_, err := config.NewConfig()
-	if err != nil {
-		log.Fatal().Err(err).Msg("config.NewConfig")
-	}
+func run() {
 
-	httpServer, err := buildDependencies()
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	var httpServer *httpserver.Server
+
+	userMessageHandlers, productMessageHandlers, httpServer, err := buildDependencies()
+	// TODO: defer pg
+
+	userMessageHandlers.Init()
+	productMessageHandlers.Init()
 
 	if err != nil {
 		log.Panic().Err(err).Msg("c.Invoke")

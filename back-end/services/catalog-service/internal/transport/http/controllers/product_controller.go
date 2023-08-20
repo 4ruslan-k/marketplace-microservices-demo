@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"catalog_service/config"
-	applicationServices "catalog_service/internal/application/services"
+	applicationServices "catalog_service/internal/services"
 	dto "catalog_service/internal/transport/http/dto"
 
 	"github.com/rs/zerolog"

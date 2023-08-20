@@ -11,7 +11,7 @@ import (
 	"customer_service/config"
 	"customer_service/pkg/httpserver"
 
-	applicationServices "customer_service/internal/application/services"
+	applicationServices "customer_service/internal/services"
 	routes "customer_service/internal/transport/http/routes"
 )
 

@@ -10,7 +10,7 @@ import (
 	"catalog_service/config"
 	"catalog_service/pkg/httpserver"
 
-	applicationServices "catalog_service/internal/application/services"
+	applicationServices "catalog_service/internal/services"
 	routes "catalog_service/internal/transport/http/routes"
 )
 

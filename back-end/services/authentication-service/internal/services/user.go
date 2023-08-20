@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 
-	domainDto "authentication_service/internal/application/dto"
+	domainDto "authentication_service/internal/services/dto"
 	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 )

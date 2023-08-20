@@ -9,7 +9,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"notification_service/config"
-	applicationServices "notification_service/internal/application/services"
+	applicationServices "notification_service/internal/services"
 	routes "notification_service/internal/transport/http/routes"
 	socketService "notification_service/internal/transport/http/socketio"
 	"notification_service/pkg/httpserver"

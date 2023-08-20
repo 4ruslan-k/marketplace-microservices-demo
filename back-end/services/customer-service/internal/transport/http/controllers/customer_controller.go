@@ -2,14 +2,14 @@ package controllers
 
 import (
 	"customer_service/config"
-	applicationServices "customer_service/internal/application/services"
+	applicationServices "customer_service/internal/services"
 	"errors"
 
 	"github.com/rs/zerolog"
 
 	"github.com/gin-gonic/gin"
 
-	domainDto "customer_service/internal/application/dto"
+	domainDto "customer_service/internal/services/dto"
 	httpErrors "shared/errors/http"
 )
 

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"cart_service/config"
-	applicationServices "cart_service/internal/application/services"
+	applicationServices "cart_service/internal/services"
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"

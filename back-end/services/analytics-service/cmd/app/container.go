@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 
 	httpServ "analytics_service/internal/transport/http"
 
-	applicationServices "analytics_service/internal/application/services"
+	applicationServices "analytics_service/internal/services"
 	"analytics_service/pkg/httpserver"
 
 	domainServices "analytics_service/internal/domain/services"

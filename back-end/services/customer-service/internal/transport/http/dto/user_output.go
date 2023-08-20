@@ -1,7 +1,7 @@
 package dto
 
 import (
-	domainDto "customer_service/internal/application/dto"
+	domainDto "customer_service/internal/services/dto"
 )
 
 type CustomerOutput struct {

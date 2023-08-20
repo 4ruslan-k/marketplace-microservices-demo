@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -13,10 +13,10 @@ import (
 	httpServ "notification_service/internal/transport/http"
 	socketServer "notification_service/internal/transport/http/socketio"
 
-	applicationServices "notification_service/internal/application/services"
 	domainServices "notification_service/internal/domain/services"
 	notificationRepository "notification_service/internal/repositories/notification/pg"
 	userRepository "notification_service/internal/repositories/user/pg"
+	applicationServices "notification_service/internal/services"
 	nats "shared/messaging/nats"
 
 	messaging "notification_service/internal/transport/messaging"

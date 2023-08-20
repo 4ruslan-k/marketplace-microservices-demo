@@ -1,7 +1,7 @@
 package dto
 
 import (
-	domainDto "notification_service/internal/application/dto"
+	domainDto "notification_service/internal/services/dto"
 )
 
 type NotificationOutput struct {

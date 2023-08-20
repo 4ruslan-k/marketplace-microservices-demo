@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 	"notification_service/config"
-	applicationServices "notification_service/internal/application/services"
+	applicationServices "notification_service/internal/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"

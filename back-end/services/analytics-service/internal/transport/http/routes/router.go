@@ -2,7 +2,7 @@ package routes
 
 import (
 	"analytics_service/config"
-	applicationServices "analytics_service/internal/application/services"
+	applicationServices "analytics_service/internal/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

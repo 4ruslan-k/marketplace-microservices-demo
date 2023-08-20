@@ -10,7 +10,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	domainDto "notification_service/internal/application/dto"
+	domainDto "notification_service/internal/services/dto"
 	customErrors "shared/errors"
 )
 

@@ -11,7 +11,7 @@ import (
 	"analytics_service/config"
 	"analytics_service/pkg/httpserver"
 
-	applicationServices "analytics_service/internal/application/services"
+	applicationServices "analytics_service/internal/services"
 	routes "analytics_service/internal/transport/http/routes"
 )
 

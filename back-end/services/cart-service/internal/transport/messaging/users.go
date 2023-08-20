@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	natsClient "shared/messaging/nats"
 
-	"cart_service/internal/application/dto"
-	applicationServices "cart_service/internal/application/services"
+	applicationServices "cart_service/internal/services"
+	"cart_service/internal/services/dto"
 
 	"github.com/nats-io/nats.go"
 	"github.com/rs/zerolog"

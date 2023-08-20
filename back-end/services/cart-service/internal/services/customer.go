@@ -1,16 +1,17 @@
 package applicationservices
 
 import (
+	customerEntity "cart_service/internal/domain/entities/customer"
+	domainServices "cart_service/internal/domain/services"
+	repositories "cart_service/internal/repositories/customer"
+	repository "cart_service/internal/repositories/customer"
 	"context"
-	customerEntity "customer_service/internal/domain/entities/customer"
-	domainServices "customer_service/internal/domain/services"
-	repository "customer_service/internal/repositories/customer"
 	"fmt"
 	"time"
 
 	"github.com/rs/zerolog"
 
-	domainDto "customer_service/internal/application/dto"
+	domainDto "cart_service/internal/services/dto"
 	customErrors "shared/errors"
 )
 
@@ -46,7 +47,7 @@ type CustomerApplicationService interface {
 }
 
 func NewCustomerApplicationService(
-	customerRepository repository.CustomerRepository,
+	customerRepository repositories.CustomerRepository,
 	logger zerolog.Logger,
 	customerDomainService domainServices.CustomerDomainService,
 ) CustomerApplicationService {

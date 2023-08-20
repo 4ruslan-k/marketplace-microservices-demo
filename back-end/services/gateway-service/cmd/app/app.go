@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"fmt"
@@ -61,7 +61,7 @@ func buildDependencies() (*httpserver.Server, error) {
 }
 
 // Run creates objects via constructors.
-func Run() {
+func run() {
 	_, err := config.NewConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("config.NewConfig")

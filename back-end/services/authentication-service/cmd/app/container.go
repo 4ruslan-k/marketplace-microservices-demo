@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -10,10 +10,10 @@ import (
 	"authentication_service/pkg/httpserver"
 	storage "authentication_service/pkg/storage/mongo"
 
-	applicationServices "authentication_service/internal/application/services"
 	domainServices "authentication_service/internal/domain/services"
 	authRepository "authentication_service/internal/repositories/authentication/mongo"
 	userRepository "authentication_service/internal/repositories/user/mongo"
+	applicationServices "authentication_service/internal/services"
 	httpServ "authentication_service/internal/transport/http"
 	middlewares "authentication_service/internal/transport/http/middlewares"
 	nats "shared/messaging/nats"

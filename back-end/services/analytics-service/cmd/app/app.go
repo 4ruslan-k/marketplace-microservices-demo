@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 	"analytics_service/config"
 )
 
-func Run() {
+func run() {
 	_, err := config.NewConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("config.NewConfig")

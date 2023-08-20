@@ -2,7 +2,7 @@ package routes
 
 import (
 	"customer_service/config"
-	applicationServices "customer_service/internal/application/services"
+	applicationServices "customer_service/internal/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

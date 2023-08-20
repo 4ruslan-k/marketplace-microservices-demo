@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 
 	httpServ "customer_service/internal/transport/http"
 
-	applicationServices "customer_service/internal/application/services"
+	applicationServices "customer_service/internal/services"
 	"customer_service/pkg/httpserver"
 
 	domainServices "customer_service/internal/domain/services"

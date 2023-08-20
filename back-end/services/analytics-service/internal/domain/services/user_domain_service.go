@@ -2,7 +2,7 @@ package domainservices
 
 import (
 	userEntity "analytics_service/internal/domain/entities/user"
-	"analytics_service/internal/ports/repositories"
+	repositories "analytics_service/internal/repositories/user"
 	"context"
 	"fmt"
 

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	domainDto "notification_service/internal/application/dto"
 	notificationEntity "notification_service/internal/domain/entities/notification"
 	repositories "notification_service/internal/repositories/notification"
 	repository "notification_service/internal/repositories/notification"
+	domainDto "notification_service/internal/services/dto"
 	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 

@@ -1,28 +1,17 @@
-package app
+package main
 
 import (
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
-	"customer_service/config"
 )
 
-func Run() {
-	_, err := config.NewConfig()
-	if err != nil {
-		log.Fatal().Err(err).Msg("config.NewConfig")
-	}
+func run() {
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	// TODO: defer pg
-	userMessagingHandler, httpServer, err := buildDependencies()
-
-	userMessagingHandler.Init()
+	// TODO: defer mongodb
+	httpServer, err := buildDependencies()
 
 	if err != nil {
 		log.Panic().Err(err).Msg("c.Invoke")

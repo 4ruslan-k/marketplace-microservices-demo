@@ -3,14 +3,14 @@ package applicationservices
 import (
 	userEntity "analytics_service/internal/domain/entities/user"
 	domainServices "analytics_service/internal/domain/services"
-	"analytics_service/internal/ports/repositories"
+	repositories "analytics_service/internal/repositories/user"
 	"context"
 	"fmt"
 	"time"
 
 	"github.com/rs/zerolog"
 
-	domainDto "analytics_service/internal/application/dto"
+	domainDto "analytics_service/internal/services/dto"
 	customErrors "shared/errors"
 )
 

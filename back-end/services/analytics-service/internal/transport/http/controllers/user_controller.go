@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"analytics_service/config"
-	applicationServices "analytics_service/internal/application/services"
 	userEntity "analytics_service/internal/domain/entities/user"
+	applicationServices "analytics_service/internal/services"
 	"errors"
 	"net/http"
 
@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	domainDto "analytics_service/internal/application/dto"
+	domainDto "analytics_service/internal/services/dto"
 	httpDto "analytics_service/internal/transport/http/dto"
 	httpErrors "shared/errors/http"
 )

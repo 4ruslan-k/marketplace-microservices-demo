@@ -11,7 +11,7 @@ import (
 	"authentication_service/config"
 	"authentication_service/pkg/httpserver"
 
-	applicationServices "authentication_service/internal/application/services"
+	applicationServices "authentication_service/internal/services"
 	middlewares "authentication_service/internal/transport/http/middlewares"
 	routes "authentication_service/internal/transport/http/routes"
 )

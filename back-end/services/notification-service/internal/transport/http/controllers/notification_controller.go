@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"notification_service/config"
-	applicationServices "notification_service/internal/application/services"
 	"notification_service/internal/domain/entities/notification"
+	applicationServices "notification_service/internal/services"
 
 	"github.com/rs/zerolog"
 

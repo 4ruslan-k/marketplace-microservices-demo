@@ -2,7 +2,7 @@ package routes
 
 import (
 	"authentication_service/config"
-	applicationServices "authentication_service/internal/application/services"
+	applicationServices "authentication_service/internal/services"
 	controllers "authentication_service/internal/transport/http/controllers"
 	middlewares "authentication_service/internal/transport/http/middlewares"
 	"net/http"

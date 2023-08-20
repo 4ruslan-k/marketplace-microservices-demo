@@ -2,7 +2,7 @@ package routes
 
 import (
 	"catalog_service/config"
-	applicationServices "catalog_service/internal/application/services"
+	applicationServices "catalog_service/internal/services"
 	controllers "catalog_service/internal/transport/http/controllers"
 	"net/http"
 

@@ -6,8 +6,8 @@ import (
 	natsClient "shared/messaging/nats"
 	"time"
 
-	applicationServices "cart_service/internal/application/services"
 	productEntity "cart_service/internal/domain/entities/product"
+	applicationServices "cart_service/internal/services"
 
 	"github.com/nats-io/nats.go"
 	"github.com/rs/zerolog"

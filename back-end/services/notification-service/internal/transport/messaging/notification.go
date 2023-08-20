@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	natsClient "shared/messaging/nats"
 
-	applicationServices "notification_service/internal/application/services"
 	notification "notification_service/internal/domain/entities/notification"
+	applicationServices "notification_service/internal/services"
 	socketServer "notification_service/internal/transport/http/socketio"
 
 	"github.com/nats-io/nats.go"

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"authentication_service/config"
-	applicationServices "authentication_service/internal/application/services"
 	userEntity "authentication_service/internal/domain/entities/user"
+	applicationServices "authentication_service/internal/services"
 	"context"
 	"errors"
 	"fmt"
@@ -21,7 +21,7 @@ import (
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 
-	domainDto "authentication_service/internal/application/dto"
+	domainDto "authentication_service/internal/services/dto"
 	httpDto "authentication_service/internal/transport/http/dto"
 	httpErrors "shared/errors/http"
 )

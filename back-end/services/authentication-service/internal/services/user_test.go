@@ -20,11 +20,11 @@ import (
 	storage "authentication_service/pkg/storage/mongo"
 	testUtils "authentication_service/pkg/testutils"
 
-	"authentication_service/internal/application/dto"
-	applicationServices "authentication_service/internal/application/services"
 	socialAccountEntity "authentication_service/internal/domain/entities/social_account"
 	userEntity "authentication_service/internal/domain/entities/user"
 	domainServices "authentication_service/internal/domain/services"
+	applicationServices "authentication_service/internal/services"
+	dto "authentication_service/internal/services/dto"
 
 	authRepo "authentication_service/internal/repositories/authentication"
 	userRepo "authentication_service/internal/repositories/user"

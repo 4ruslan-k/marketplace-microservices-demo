@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 	nats "shared/messaging/nats"
 	pgStorage "shared/storage/pg"
 
-	applicationServices "catalog_service/internal/application/services"
+	applicationServices "catalog_service/internal/services"
 
 	repository "catalog_service/internal/repositories/product/pg"
 	httpServ "catalog_service/internal/transport/http"

@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"os"
@@ -12,11 +12,11 @@ import (
 
 	httpServ "cart_service/internal/transport/http"
 
-	applicationServices "cart_service/internal/application/services"
 	domainServices "cart_service/internal/domain/services"
 	cartInfraRepository "cart_service/internal/repositories/cart/pg"
 	userInfraRepository "cart_service/internal/repositories/customer/pg"
 	productInfraRepository "cart_service/internal/repositories/product/pg"
+	applicationServices "cart_service/internal/services"
 	nats "shared/messaging/nats"
 
 	messaging "cart_service/internal/transport/messaging"

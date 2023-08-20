@@ -1,17 +1,30 @@
-package app
+package main
 
 import (
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	"notification_service/pkg/httpserver"
+
+	socketServer "notification_service/internal/transport/http/socketio"
 )
 
-func Run() {
+func run() {
 
-	// TODO: defer mongodb
-	httpServer, err := buildDependencies()
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	var httpServer *httpserver.Server
+	var socketServ *socketServer.SocketIOServer
+
+	userMessageHandlers, notificationMessageHandlers, socketServer, httpServer, err := buildDependencies()
+	// TODO: defer pg
+
+	userMessageHandlers.Init()
+	notificationMessageHandlers.Init()
+	socketServ = socketServer
 
 	if err != nil {
 		log.Panic().Err(err).Msg("c.Invoke")
@@ -32,5 +45,7 @@ func Run() {
 	if err != nil {
 		log.Error().Err(err).Msg("app - Run - httpServer.Shutdown")
 	}
+
+	defer socketServ.Server.Close()
 
 }
