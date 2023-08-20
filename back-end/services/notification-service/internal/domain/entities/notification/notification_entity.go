@@ -1,7 +1,7 @@
 package notification
 
 import (
-	customErrors "notification_service/pkg/errors"
+	customErrors "shared/errors"
 	"time"
 )
 

@@ -13,7 +13,7 @@ import (
 
 	domainDto "analytics_service/internal/application/dto"
 	httpDto "analytics_service/internal/transport/http/dto"
-	httpErrors "analytics_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 )
 
 type UserControllers struct {

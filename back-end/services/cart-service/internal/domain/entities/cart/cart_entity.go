@@ -1,7 +1,7 @@
 package cart
 
 import (
-	customErrors "cart_service/pkg/errors"
+	customErrors "shared/errors"
 )
 
 var (

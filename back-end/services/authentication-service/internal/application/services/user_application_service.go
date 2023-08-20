@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog"
 
 	domainDto "authentication_service/internal/application/dto"
-	customErrors "authentication_service/pkg/errors"
+	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 )
 

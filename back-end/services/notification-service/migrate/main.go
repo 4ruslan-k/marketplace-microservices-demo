@@ -14,7 +14,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 
-	pgStorage "notification_service/pkg/storage/pg"
+	pgStorage "shared/storage/pg"
 
 	"github.com/urfave/cli/v2"
 )

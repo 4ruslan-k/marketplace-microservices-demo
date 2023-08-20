@@ -3,11 +3,11 @@ package domainservices
 import (
 	passwordVerificationEntity "authentication_service/internal/domain/entities/password_verification_token"
 	"authentication_service/internal/ports/repositories"
-	customErrors "authentication_service/pkg/errors"
 	"bytes"
 	"context"
 	"fmt"
 	"image/png"
+	customErrors "shared/errors"
 	"time"
 
 	"encoding/base64"

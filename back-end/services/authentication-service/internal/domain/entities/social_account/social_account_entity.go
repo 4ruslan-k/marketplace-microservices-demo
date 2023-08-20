@@ -1,8 +1,8 @@
 package soccialaccount
 
 import (
-	customErrors "authentication_service/pkg/errors"
 	"regexp"
+	customErrors "shared/errors"
 	"time"
 
 	"github.com/google/uuid"

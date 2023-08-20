@@ -9,7 +9,7 @@ import (
 	natsClient "shared/messaging/nats"
 	"time"
 
-	customErrors "catalog_service/pkg/errors"
+	customErrors "shared/errors"
 
 	"github.com/rs/zerolog"
 )

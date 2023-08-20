@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog"
 
 	domainDto "notification_service/internal/application/dto"
-	customErrors "notification_service/pkg/errors"
+	customErrors "shared/errors"
 )
 
 var ErrNoUser = customErrors.NewIncorrectInputError("no_user", "No user with this email")

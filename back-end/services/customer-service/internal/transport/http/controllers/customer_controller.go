@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	domainDto "customer_service/internal/application/dto"
-	httpErrors "customer_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 )
 
 type CustomerControllers struct {

@@ -1,8 +1,9 @@
 package httperrors
 
 import (
-	"customer_service/pkg/errors"
+	"errors"
 	"net/http"
+	customErrors "shared/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -24,22 +25,27 @@ func NotFoundRequest(c *gin.Context, message string) {
 	httpRespondWithError(c, message, http.StatusNotFound)
 }
 
+func TooManyRequests(c *gin.Context) {
+	httpRespondWithError(c, "Too Many requests", http.StatusTooManyRequests)
+}
+
 func RespondWithError(c *gin.Context, err error) {
 	log.Debug().Err(err).Msg("RespondWithError")
-	errorStruct, ok := err.(errors.CustomError)
+	var customErrorStruct customErrors.CustomError
+	ok := errors.As(err, &customErrorStruct)
 	if !ok {
 		InternalError(c, "Something went wrong")
 		return
 	}
-	switch errorStruct.ErrorType() {
-	case errors.ErrorTypeAuthorization:
-		Unauthorized(c, errorStruct.Message())
-	case errors.ErrorTypeIncorrectInput:
-		BadRequest(c, errorStruct.Message())
-	case errors.ErrorTypeNotFound:
-		NotFoundRequest(c, errorStruct.Message())
+	switch customErrorStruct.ErrorType() {
+	case customErrors.ErrorTypeAuthorization:
+		Unauthorized(c, customErrorStruct.Message())
+	case customErrors.ErrorTypeIncorrectInput:
+		BadRequest(c, customErrorStruct.Message())
+	case customErrors.ErrorTypeNotFound:
+		NotFoundRequest(c, customErrorStruct.Message())
 	default:
-		InternalError(c, errorStruct.Message())
+		InternalError(c, customErrorStruct.Message())
 	}
 }
 

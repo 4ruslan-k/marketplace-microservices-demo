@@ -3,7 +3,7 @@ package notification
 import (
 	"time"
 
-	customErrors "notification_service/pkg/errors"
+	customErrors "shared/errors"
 
 	"github.com/google/uuid"
 )

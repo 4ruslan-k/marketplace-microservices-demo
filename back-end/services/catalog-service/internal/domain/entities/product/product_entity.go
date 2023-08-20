@@ -1,7 +1,7 @@
 package product
 
 import (
-	customErrors "catalog_service/pkg/errors"
+	customErrors "shared/errors"
 	"time"
 
 	"github.com/google/uuid"

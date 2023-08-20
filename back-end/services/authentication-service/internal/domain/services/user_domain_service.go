@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	customErrors "authentication_service/pkg/errors"
+	customErrors "shared/errors"
 
 	"github.com/rs/zerolog"
 )

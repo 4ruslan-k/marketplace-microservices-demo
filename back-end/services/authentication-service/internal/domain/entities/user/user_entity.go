@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"time"
 
-	customErrors "authentication_service/pkg/errors"
+	customErrors "shared/errors"
 
 	mfaSettingsEntity "authentication_service/internal/domain/entities/mfa_settings"
 	socialAccountEntity "authentication_service/internal/domain/entities/social_account"

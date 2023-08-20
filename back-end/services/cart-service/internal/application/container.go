@@ -8,7 +8,7 @@ import (
 
 	"cart_service/config"
 	"cart_service/pkg/httpserver"
-	pgStorage "cart_service/pkg/storage/pg"
+	pgStorage "shared/storage/pg"
 
 	httpServ "cart_service/internal/transport/http"
 
@@ -35,7 +35,7 @@ func buildDependencies() (
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	pg := pgStorage.NewClient(logger, config)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 	nats := nats.NewNatsClient()
 	userRepo := userInfraRepository.NewCustomerRepository(pg, logger)
 	productRepo := productInfraRepository.NewProductRepository(pg, logger)

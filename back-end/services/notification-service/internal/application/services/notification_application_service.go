@@ -9,7 +9,7 @@ import (
 	domainDto "notification_service/internal/application/dto"
 	notificationEntity "notification_service/internal/domain/entities/notification"
 	"notification_service/internal/ports/repositories"
-	customErrors "notification_service/pkg/errors"
+	customErrors "shared/errors"
 	nats "shared/messaging/nats"
 
 	"github.com/rs/zerolog"

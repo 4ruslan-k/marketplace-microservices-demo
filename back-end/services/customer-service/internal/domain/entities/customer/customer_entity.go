@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"time"
 
-	customErrors "customer_service/pkg/errors"
+	customErrors "shared/errors"
 )
 
 var ErrInvalidEmailFormat = customErrors.NewIncorrectInputError("invalid_email", "invalid email format")

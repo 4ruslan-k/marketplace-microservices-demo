@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
-	httpErrors "cart_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 )
 
 type ProductController struct {

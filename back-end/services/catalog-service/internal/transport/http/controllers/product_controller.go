@@ -9,7 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	httpErrors "catalog_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 
 	productEntity "catalog_service/internal/domain/entities/product"
 )

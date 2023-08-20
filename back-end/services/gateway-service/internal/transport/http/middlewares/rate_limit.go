@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	applicationServices "gateway/internal/domain/application-services"
-	httpErrors "gateway/pkg/errors/http"
 	"log"
 	"math"
+	httpErrors "shared/errors/http"
 	"strconv"
 	"time"
 

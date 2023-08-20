@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	applicationServices "gateway/internal/domain/application-services"
-	httpErrors "gateway/pkg/errors/http"
+	httpErrors "shared/errors/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"

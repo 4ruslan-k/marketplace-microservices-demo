@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	httpDto "notification_service/internal/transport/http/dto"
-	httpErrors "notification_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 )
 
 type NotificationControllers struct {

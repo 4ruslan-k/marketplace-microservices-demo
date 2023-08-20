@@ -23,7 +23,7 @@ import (
 
 	domainDto "authentication_service/internal/application/dto"
 	httpDto "authentication_service/internal/transport/http/dto"
-	httpErrors "authentication_service/pkg/errors/http"
+	httpErrors "shared/errors/http"
 )
 
 type UserControllers struct {
