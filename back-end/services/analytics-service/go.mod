@@ -15,6 +15,7 @@ require (
 	github.com/uptrace/bun/extra/bundebug v1.1.11
 	github.com/urfave/cli/v2 v2.25.1
 	gopkg.in/yaml.v2 v2.4.0
+	shared v0.0.0
 )
 
 require (
@@ -56,3 +57,4 @@ require (
 )
 
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20221013203545-33ab36d6b304+incompatible // 22.06 branch
+replace shared v0.0.0 => ../../pkg

@@ -29,8 +29,7 @@ func initializeClient(logger zerolog.Logger, dsn string, verbose bool) *bun.DB {
 }
 
 func NewClient(logger zerolog.Logger, config *config.Config) *bun.DB {
-	// TODO: use variable
-	dsn := "postgres://admin:admin@postgres:5432/analytics?sslmode=disable"
+	dsn := config.PgSDN
 	return initializeClient(logger, dsn, true)
 }
 

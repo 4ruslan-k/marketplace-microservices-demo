@@ -1,7 +1,12 @@
 package main
 
-import app "analytics_service/internal/application"
+import (
+	sharedd "shared"
+
+	app "analytics_service/internal/application"
+)
 
 func main() {
+	sharedd.StoreSomething()
 	app.Run()
 }

@@ -4,7 +4,7 @@ services:
     env_file:
       - ./back-end/services/gateway-service/.env.docker
     build:
-      context: back-end/gateway-service/
+      context: ./back-end/services/gateway-service/
       dockerfile: Dockerfile.dev
     volumes:
       - ./back-end/services/gateway-service/:/app
@@ -17,7 +17,7 @@ services:
     env_file:
       - ./back-end/services/catalog-service/.env.docker
     build:
-      context: back-end/catalog-service/
+      context: ./back-end/services/catalog-service/
       dockerfile: Dockerfile.dev
     volumes:
       - ./back-end/services/catalog-service/:/app
@@ -28,7 +28,7 @@ services:
     env_file:
       - ./back-end/services/authentication-service/.env.docker
     build:
-      context: back-end/authentication-service/
+      context: ./back-end/services/authentication-service/
       dockerfile: Dockerfile.dev
     volumes:
       - ./back-end/services/authentication-service/:/app
@@ -42,8 +42,8 @@ services:
     env_file:
     - ./back-end/services/analytics-service/.env.docker
     build:
-      context: back-end/analytics-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/analytics-service/Dockerfile.dev
     volumes:
       - ./back-end/services/analytics-service/:/app:rw,delegated
     ports:
@@ -56,7 +56,7 @@ services:
     env_file:
     - ./back-end/services/customer-service/.env.docker
     build:
-      context: back-end/customer-service/
+      context: ./back-end/services/customer-service/
       dockerfile: Dockerfile.dev
     volumes:
       - ./back-end/services/customer-service/:/app:rw,delegated
@@ -70,7 +70,7 @@ services:
     env_file:
     - ./back-end/services/cart-service/.env.docker
     build:
-      context: back-end/cart-service/
+      context: ./back-end/services/cart-service/
       dockerfile: Dockerfile.dev
     volumes:
       - ./back-end/services/cart-service/:/app:rw,delegated
@@ -84,7 +84,7 @@ services:
     env_file:
     - ./back-end/services/notification-service/.env.docker
     build:
-      context: back-end/notification-service/
+      context: ./back-end/services/notification-service/
       dockerfile: Dockerfile.dev
     environment:
       - ./back-end/services/notification-service/:/app
