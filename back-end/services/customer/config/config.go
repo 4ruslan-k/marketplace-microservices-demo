@@ -65,7 +65,7 @@ func NewConfig() (*Config, error) {
 func NewTestConfig() (*Config, error) {
 	godotenv.Load(".env.test")
 	cfg := &Config{}
-	absPath, _ := filepath.Abs("../../../config/config_test.yml")
+	absPath, _ := filepath.Abs("../../config/config_test.yml")
 
 	err := cleanenv.ReadConfig(absPath, cfg)
 
