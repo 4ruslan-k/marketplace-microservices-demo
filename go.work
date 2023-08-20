@@ -1,11 +1,11 @@
 go 1.20
 
 use (
-	./back-end/catalog-service
-	./back-end/gateway-service
-	./back-end/authentication-service
-	./back-end/analytics-service
-	./back-end/customer-service
-	./back-end/notification-service
-	./back-end/cart-service
+	./back-end/services/catalog-service
+	./back-end/services/gateway-service
+	./back-end/services/authentication-service
+	./back-end/services/analytics-service
+	./back-end/services/customer-service
+	./back-end/services/notification-service
+	./back-end/services/cart-service
 )
