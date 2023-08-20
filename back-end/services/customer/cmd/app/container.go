@@ -14,7 +14,6 @@ import (
 	applicationServices "customer/internal/services"
 	"customer/pkg/httpserver"
 
-	domainServices "customer/internal/domain/services"
 	customerRepo "customer/internal/repositories/customer/pg"
 	nats "shared/messaging/nats"
 
@@ -32,10 +31,9 @@ func buildDependencies() (messaging.UserMessagingHandlers, *httpserver.Server, e
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 
 	customerRepo := customerRepo.NewCustomerRepository(pg, logger)
-	customerDomainService := domainServices.NewCustomerService(logger, customerRepo)
 	nats := nats.NewNatsClient()
 
-	customerAppService := applicationServices.NewCustomerApplicationService(customerRepo, logger, customerDomainService)
+	customerAppService := applicationServices.NewCustomerApplicationService(customerRepo, logger)
 
 	userMessagingHandlers := messaging.NewCustomerMessagingHandlers(nats, customerAppService, logger)
 

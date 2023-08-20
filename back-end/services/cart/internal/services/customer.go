@@ -2,7 +2,6 @@ package applicationservices
 
 import (
 	customerEntity "cart/internal/domain/entities/customer"
-	domainServices "cart/internal/domain/services"
 	repositories "cart/internal/repositories/customer"
 	repository "cart/internal/repositories/customer"
 	"context"
@@ -23,9 +22,8 @@ var ErrCustomerNotFound = customErrors.NewIncorrectInputError("no_customer", "Us
 var _ CustomerApplicationService = (*customerApplicationService)(nil)
 
 type customerApplicationService struct {
-	customerRepository    repository.CustomerRepository
-	customerDomainService domainServices.CustomerDomainService
-	logger                zerolog.Logger
+	customerRepository repository.CustomerRepository
+	logger             zerolog.Logger
 }
 
 func CustomerEntityToOutput(customer *customerEntity.Customer) *domainDto.CustomerOutput {
@@ -49,9 +47,8 @@ type CustomerApplicationService interface {
 func NewCustomerApplicationService(
 	customerRepository repositories.CustomerRepository,
 	logger zerolog.Logger,
-	customerDomainService domainServices.CustomerDomainService,
 ) CustomerApplicationService {
-	return customerApplicationService{customerRepository, customerDomainService, logger}
+	return customerApplicationService{customerRepository, logger}
 }
 
 func (u customerApplicationService) GetCustomerByID(ctx context.Context, customerID string) (*domainDto.CustomerOutput, error) {
@@ -67,11 +64,35 @@ func (u customerApplicationService) CreateCustomer(
 	ctx context.Context,
 	createCustomerParams customerEntity.CreateCustomerParams,
 ) (*domainDto.CustomerOutput, error) {
-	createdCustomer, err := u.customerDomainService.CreateCustomer(ctx, createCustomerParams)
+	createdCustomer, err := u.createCustomer(ctx, createCustomerParams)
 	if err != nil {
 		return nil, err
 	}
 	return CustomerEntityToOutput(createdCustomer), nil
+}
+
+func (u customerApplicationService) createCustomer(
+	ctx context.Context,
+	createUserParams customerEntity.CreateCustomerParams,
+) (*customerEntity.Customer, error) {
+	u.logger.Info().Interface("createUserParams", createUserParams).Msg("customerService -> CreateCustomer -> createUserParams")
+	newUser, err := customerEntity.NewCustomer(customerEntity.CreateCustomerParams{
+		Name:  createUserParams.Name,
+		Email: createUserParams.Email,
+		ID:    createUserParams.ID,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("customerService -> CreateCustomer - NewCustomer: %w", err)
+	}
+
+	err = u.customerRepository.Create(ctx, *newUser)
+
+	if err != nil {
+		return nil, fmt.Errorf("customerService -> CreateCustomer - CustomerRepository.Create: %w", err)
+	}
+
+	return nil, err
 }
 
 // Updates a customer

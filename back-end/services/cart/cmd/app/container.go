@@ -12,7 +12,6 @@ import (
 
 	httpServ "cart/internal/transport/http"
 
-	domainServices "cart/internal/domain/services"
 	cartInfraRepository "cart/internal/repositories/cart/pg"
 	userInfraRepository "cart/internal/repositories/customer/pg"
 	productInfraRepository "cart/internal/repositories/product/pg"
@@ -41,9 +40,7 @@ func buildDependencies() (
 	productRepo := productInfraRepository.NewProductRepository(pg, logger)
 	cartRepo := cartInfraRepository.NewCartRepository(pg, logger)
 
-	userDomainService := domainServices.NewCustomerService(logger, userRepo)
-
-	userApplicationService := applicationServices.NewCustomerApplicationService(userRepo, logger, userDomainService)
+	userApplicationService := applicationServices.NewCustomerApplicationService(userRepo, logger)
 	productAppService := applicationServices.NewProductApplicationService(productRepo, cartRepo, logger, nats)
 
 	productController := controllers.NewProductController(productAppService, logger, config)
