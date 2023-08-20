@@ -1,0 +1,21 @@
+FROM golang:1.20.5-alpine
+
+RUN apk add --no-cache git
+
+WORKDIR /
+
+COPY /pkg pkg
+
+WORKDIR /src/app
+
+COPY /services/customer/go.mod .
+COPY /services/customer/go.sum .
+
+RUN go mod download
+RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+COPY /services/customer .
+
+CMD ["air",  "-c", ".air_debug.toml"]
+

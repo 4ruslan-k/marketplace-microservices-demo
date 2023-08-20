@@ -1,93 +1,93 @@
 version: '3.8'
 services:
-  gateway-service:
+  gateway:
     env_file:
-      - ./back-end/services/gateway-service/.env.docker
+      - ./back-end/services/gateway/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/gateway-service/Dockerfile.dev
+      dockerfile: ./services/gateway/Dockerfile.dev
     volumes:
-      - ./back-end/services/gateway-service/:/src/app
+      - ./back-end/services/gateway/:/src/app
     ports:
       - 4001:4001
       - 2347:2345
     depends_on:
       - redis
-  catalog-service:
+  catalog:
     env_file:
-      - ./back-end/services/catalog-service/.env.docker
+      - ./back-end/services/catalog/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/catalog-service/Dockerfile.dev
+      dockerfile: ./services/catalog/Dockerfile.dev
     volumes:
-      - ./back-end/services/catalog-service/:/src/app
+      - ./back-end/services/catalog/:/src/app
     ports:
       - 4002:4002
       - 2346:2345
-  authentication-service:
+  authentication:
     env_file:
-      - ./back-end/services/authentication-service/.env.docker
+      - ./back-end/services/authentication/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/authentication-service/Dockerfile.dev
+      dockerfile: ./services/authentication/Dockerfile.dev
     volumes:
-      - ./back-end/services/authentication-service/:/src/app
+      - ./back-end/services/authentication/:/src/app
     ports:
       - 4003:4003
       - 2348:2345
     depends_on:
       - mongodb
       - nats
-  analytics-service:
+  analytics:
     env_file:
-    - ./back-end/services/analytics-service/.env.docker
+    - ./back-end/services/analytics/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/analytics-service/Dockerfile.dev
+      dockerfile: ./services/analytics/Dockerfile.dev
     volumes:
-      - ./back-end/services/analytics-service/:/src/app:rw,delegated
+      - ./back-end/services/analytics/:/src/app:rw,delegated
     ports:
       - 4004:4004
       - 2349:2345
     depends_on:
       - nats
       - postgres
-  customer-service:
+  customer:
     env_file:
-    - ./back-end/services/customer-service/.env.docker
+    - ./back-end/services/customer/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/customer-service/Dockerfile.dev
+      dockerfile: ./services/customer/Dockerfile.dev
     volumes:
-      - ./back-end/services/customer-service/:/src/app:rw,delegated
+      - ./back-end/services/customer/:/src/app:rw,delegated
     ports:
       - 4006:4006
       - 2350:2345
     depends_on:
       - nats
       - postgres
-  cart-service:
+  cart:
     env_file:
-    - ./back-end/services/cart-service/.env.docker
+    - ./back-end/services/cart/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/cart-service/Dockerfile.dev
+      dockerfile: ./services/cart/Dockerfile.dev
     volumes:
-      - ./back-end/services/cart-service/:/src/app:rw,delegated
+      - ./back-end/services/cart/:/src/app:rw,delegated
     ports:
       - 4007:4007
       - 2351:2345
     depends_on:
       - nats
       - postgres
-  notification-service:
+  notification:
     env_file:
-    - ./back-end/services/notification-service/.env.docker
+    - ./back-end/services/notification/.env.docker
     build:
       context: ./back-end
-      dockerfile: ./services/notification-service/Dockerfile.dev
+      dockerfile: ./services/notification/Dockerfile.dev
     volumes:
-      - ./back-end/services/notification-service/:/src/app:rw,delegated
+      - ./back-end/services/notification/:/src/app:rw,delegated
     ports:
       - 4005:4005
     depends_on:

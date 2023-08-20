@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "catalog-service - Delve into  Docker",
+            "name": "catalog - Delve into  Docker",
             "type": "go",
             "request": "attach",
             "mode": "remote",
             "debugAdapter": "dlv-dap",
             "substitutePath": [
                 {
-                    "from": "${workspaceFolder}/back-end/catalog-service",
+                    "from": "${workspaceFolder}/back-end/catalog",
                     "to": "/app/",
                 },
             ],
@@ -23,14 +23,14 @@
             "trace": "verbose"
         },
         {
-            "name": "gateway-service - Delve into  Docker",
+            "name": "gateway - Delve into  Docker",
             "type": "go",
             "request": "attach",
             "mode": "remote",
             "debugAdapter": "dlv-dap",
             "substitutePath": [
                 {
-                    "from": "${workspaceFolder}/back-end/gateway-service",
+                    "from": "${workspaceFolder}/back-end/gateway",
                     "to": "/app/",
                 },
             ],
@@ -41,14 +41,14 @@
             "trace": "verbose"
         },
         {
-            "name": "authentication-service - Delve into  Docker",
+            "name": "authentication - Delve into  Docker",
             "type": "go",
             "request": "attach",
             "mode": "remote",
             "debugAdapter": "dlv-dap",
             "substitutePath": [
                 {
-                    "from": "${workspaceFolder}/back-end/authentication-service",
+                    "from": "${workspaceFolder}/back-end/authentication",
                     "to": "/app/",
                 },
             ],
@@ -59,14 +59,14 @@
             "trace": "verbose"
         },
         {
-            "name": "analytics-service - Delve into  Docker",
+            "name": "analytics - Delve into  Docker",
             "type": "go",
             "request": "attach",
             "mode": "remote",
             "debugAdapter": "dlv-dap",
             "substitutePath": [
                 {
-                    "from": "${workspaceFolder}/back-end/analytics-service",
+                    "from": "${workspaceFolder}/back-end/analytics",
                     "to": "/app/",
                 },
             ],

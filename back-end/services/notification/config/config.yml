@@ -1,0 +1,8 @@
+app:
+  name: 'notification'
+  version: '0.0.1'
+nats_uri: ${NATS_URI}
+project_root: ${PROJECT_ROOT}
+pg_dsn: ${PG_SDN}
+http:
+  port: ${PORT}

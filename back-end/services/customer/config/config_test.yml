@@ -1,0 +1,5 @@
+app:
+  name: 'customer'
+  version: '0.0.1'
+http:
+  port: '4003'
