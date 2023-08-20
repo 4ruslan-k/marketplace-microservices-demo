@@ -8,7 +8,7 @@ import (
 
 	"notification_service/config"
 	"notification_service/pkg/httpserver"
-	pgStorage "notification_service/pkg/storage/pg"
+	pgStorage "shared/storage/pg"
 
 	httpServ "notification_service/internal/transport/http"
 	socketServer "notification_service/internal/transport/http/socketio"
@@ -34,7 +34,7 @@ func buildDependencies() (
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
-	pg := pgStorage.NewClient(logger, config)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 	nats := nats.NewNatsClient()
 	userRepo := userInfraRepository.NewUserRepository(pg, logger)
 	notificationRepo := notificationInfraRepository.NewNotificationRepository(pg, logger)

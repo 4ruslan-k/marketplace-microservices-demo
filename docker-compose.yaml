@@ -7,7 +7,7 @@ services:
       context: ./back-end
       dockerfile: ./services/gateway-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/gateway-service/:/app
+      - ./back-end/services/gateway-service/:/src/app
     ports:
       - 4001:4001
       - 2347:2345
@@ -20,7 +20,7 @@ services:
       context: ./back-end
       dockerfile: ./services/catalog-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/catalog-service/:/app
+      - ./back-end/services/catalog-service/:/src/app
     ports:
       - 4002:4002
       - 2346:2345
@@ -31,7 +31,7 @@ services:
       context: ./back-end
       dockerfile: ./services/authentication-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/authentication-service/:/app
+      - ./back-end/services/authentication-service/:/src/app
     ports:
       - 4003:4003
       - 2348:2345
@@ -45,7 +45,7 @@ services:
       context: ./back-end
       dockerfile: ./services/analytics-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/analytics-service/:/app:rw,delegated
+      - ./back-end/services/analytics-service/:/src/app:rw,delegated
     ports:
       - 4004:4004
       - 2349:2345
@@ -59,7 +59,7 @@ services:
       context: ./back-end
       dockerfile: ./services/customer-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/customer-service/:/app:rw,delegated
+      - ./back-end/services/customer-service/:/src/app:rw,delegated
     ports:
       - 4006:4006
       - 2350:2345
@@ -73,7 +73,7 @@ services:
       context: ./back-end
       dockerfile: ./services/cart-service/Dockerfile.dev
     volumes:
-      - ./back-end/services/cart-service/:/app:rw,delegated
+      - ./back-end/services/cart-service/:/src/app:rw,delegated
     ports:
       - 4007:4007
       - 2351:2345
@@ -86,10 +86,8 @@ services:
     build:
       context: ./back-end
       dockerfile: ./services/notification-service/Dockerfile.dev
-    environment:
-      - ./back-end/services/notification-service/:/app
     volumes:
-      - ./back-end/services/notification-service/:/app:rw,delegated
+      - ./back-end/services/notification-service/:/src/app:rw,delegated
     ports:
       - 4005:4005
     depends_on:

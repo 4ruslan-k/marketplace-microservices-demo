@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"customer_service/config"
-	pgStorage "customer_service/pkg/storage/pg"
+	pgStorage "shared/storage/pg"
 
 	httpServ "customer_service/internal/transport/http"
 
@@ -29,7 +29,7 @@ func buildDependencies() (messaging.UserMessagingHandlers, *httpserver.Server, e
 		return nil, nil, err
 	}
 
-	pg := pgStorage.NewClient(logger, config)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: config.PgSDN})
 
 	customerRepo := customerInfraRepository.NewCustomerRepository(pg, logger)
 	customerDomainService := domainServices.NewCustomerService(logger, customerRepo)

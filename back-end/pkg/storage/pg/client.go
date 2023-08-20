@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"notification_service/config"
 
 	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
@@ -11,6 +10,10 @@ import (
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/uptrace/bun/extra/bundebug"
 )
+
+type Config struct {
+	DSN string
+}
 
 func initializeClient(logger zerolog.Logger, dsn string, verbose bool) *bun.DB {
 	connector := pgdriver.NewConnector(pgdriver.WithDSN(dsn))
@@ -24,11 +27,12 @@ func initializeClient(logger zerolog.Logger, dsn string, verbose bool) *bun.DB {
 		logger.Fatal().Err(err).Msg("Failed to connect to database")
 	}
 	logger.Info().Msgf("Connected to database, addr: %s, database: %s", connector.Config().Addr, connector.Config().Database)
+
 	return db
 }
 
-func NewClient(logger zerolog.Logger, config *config.Config) *bun.DB {
-	dsn := config.PgSDN
+func NewClient(logger zerolog.Logger, config Config) *bun.DB {
+	dsn := config.DSN
 	return initializeClient(logger, dsn, true)
 }
 

@@ -9,10 +9,10 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/nats-io/nats.go v1.28.0
 	github.com/rs/zerolog v1.30.0
-	github.com/uptrace/bun v1.1.11
-	github.com/uptrace/bun/dialect/pgdialect v1.1.11
-	github.com/uptrace/bun/driver/pgdriver v1.1.11
-	github.com/uptrace/bun/extra/bundebug v1.1.11
+	github.com/uptrace/bun v1.1.14
+	github.com/uptrace/bun/dialect/pgdialect v1.1.14
+	github.com/uptrace/bun/driver/pgdriver v1.1.14
+	github.com/uptrace/bun/extra/bundebug v1.1.14
 	github.com/urfave/cli/v2 v2.25.1
 	gopkg.in/yaml.v2 v2.4.0
 	shared v0.0.0
@@ -21,7 +21,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/fatih/color v1.14.1 // indirect
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -32,7 +32,7 @@ require (
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect

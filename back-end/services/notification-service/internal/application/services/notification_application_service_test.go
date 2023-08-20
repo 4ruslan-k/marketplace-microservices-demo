@@ -20,7 +20,7 @@ import (
 	pgrepositories "notification_service/internal/infrastructure/repositories/pg/notification"
 	repo "notification_service/internal/ports/repositories"
 	"notification_service/migrate/migrations"
-	pgStorage "notification_service/pkg/storage/pg"
+	pgStorage "shared/storage/pg"
 
 	applicationServices "notification_service/internal/application/services"
 	mocks "notification_service/mocks/pkg/messaging/nats"
@@ -87,7 +87,7 @@ func NewTestApplicationService(
 func TestUserApplicationService_CreateUserNotification(t *testing.T) {
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
-	pg := pgStorage.NewClient(logger, testConf)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
@@ -149,7 +149,7 @@ func TestUserApplicationService_CreateUserNotification(t *testing.T) {
 func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
-	pg := pgStorage.NewClient(logger, testConf)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
@@ -236,7 +236,7 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 func TestUserApplicationService_ViewNotification(t *testing.T) {
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
-	pg := pgStorage.NewClient(logger, testConf)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
@@ -317,7 +317,7 @@ func TestUserApplicationService_ViewNotification(t *testing.T) {
 func TestUserApplicationService_DeleteUserNotification(t *testing.T) {
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
-	pg := pgStorage.NewClient(logger, testConf)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
@@ -396,7 +396,7 @@ func TestUserApplicationService_DeleteUserNotification(t *testing.T) {
 func TestUserApplicationService_ViewAllNotifications(t *testing.T) {
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
-	pg := pgStorage.NewClient(logger, testConf)
+	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
