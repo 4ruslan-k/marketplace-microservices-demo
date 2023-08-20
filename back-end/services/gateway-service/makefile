@@ -17,7 +17,7 @@ install-tools:
 
 .PHONY: run
 run:
-	@ENV_FILE_PATH=$(ENV_FILE_PATH) $(binDir)/air
+	@ENV_FILE_PATH=$(ENV_FILE_PATH) $(binDir)/air -c .air_debug.toml
 
 .PHONY: lint
 lint:
