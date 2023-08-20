@@ -16,7 +16,7 @@ import (
 
 	domainServices "customer_service/internal/domain/services"
 	customerInfraRepository "customer_service/internal/infrastructure/repositories/pg/customer"
-	nats "customer_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	messaging "customer_service/internal/transport/messaging"
 )

@@ -3,10 +3,10 @@ package applicationservices
 import (
 	productEntity "catalog_service/internal/domain/entities/product"
 	"catalog_service/internal/ports/repositories"
-	natsClient "catalog_service/pkg/nats"
 	"context"
 	"encoding/json"
 	"fmt"
+	natsClient "shared/messaging/nats"
 	"time"
 
 	customErrors "catalog_service/pkg/errors"

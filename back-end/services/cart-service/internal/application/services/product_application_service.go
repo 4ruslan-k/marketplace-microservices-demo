@@ -8,7 +8,7 @@ import (
 	productEntity "cart_service/internal/domain/entities/product"
 	"cart_service/internal/ports/repositories"
 	customErrors "cart_service/pkg/errors"
-	nats "cart_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	"github.com/rs/zerolog"
 )

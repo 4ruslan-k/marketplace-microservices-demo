@@ -17,7 +17,7 @@ import (
 	cartInfraRepository "cart_service/internal/infrastructure/repositories/pg/cart"
 	userInfraRepository "cart_service/internal/infrastructure/repositories/pg/customer"
 	productInfraRepository "cart_service/internal/infrastructure/repositories/pg/product"
-	nats "cart_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	messaging "cart_service/internal/transport/messaging"
 

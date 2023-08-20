@@ -10,8 +10,8 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/jaswdr/faker v1.16.0
 	github.com/joho/godotenv v1.4.0
-	github.com/nats-io/nats.go v1.23.0
-	github.com/rs/zerolog v1.29.0
+	github.com/nats-io/nats.go v1.28.0
+	github.com/rs/zerolog v1.30.0
 	github.com/stretchr/testify v1.8.2
 	github.com/testcontainers/testcontainers-go v0.19.0
 	github.com/uptrace/bun v1.1.12
@@ -26,6 +26,7 @@ require (
 	google.golang.org/grpc v1.51.0
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools/v3 v3.0.3
+	shared v0.0.0
 )
 
 require (
@@ -48,25 +49,26 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.15.15 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/term v0.0.0-20221128092401-c43b287e0e0f // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
-	github.com/nats-io/nats-server/v2 v2.9.14 // indirect
-	github.com/nats-io/nkeys v0.3.0 // indirect
+	github.com/nats-io/jwt/v2 v2.4.1 // indirect
+	github.com/nats-io/nkeys v0.4.4 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
@@ -84,15 +86,18 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.11.2 // indirect
 	go.opentelemetry.io/otel/trace v1.13.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
-	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	mellium.im/sasl v0.3.1 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
 
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20221013203545-33ab36d6b304+incompatible // 22.06 branch
+
+replace shared v0.0.0 => ../../pkg

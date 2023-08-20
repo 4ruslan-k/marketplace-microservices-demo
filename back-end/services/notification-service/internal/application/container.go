@@ -17,7 +17,7 @@ import (
 	domainServices "notification_service/internal/domain/services"
 	notificationInfraRepository "notification_service/internal/infrastructure/repositories/pg/notification"
 	userInfraRepository "notification_service/internal/infrastructure/repositories/pg/user"
-	nats "notification_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	messaging "notification_service/internal/transport/messaging"
 )

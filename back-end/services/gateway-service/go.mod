@@ -10,7 +10,7 @@ require (
 	github.com/gomodule/redigo v1.8.9
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.28.0
+	github.com/rs/zerolog v1.30.0
 	github.com/sethvargo/go-limiter v0.7.2
 	github.com/sethvargo/go-redisstore v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -32,9 +32,11 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d // indirect
-	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
-	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/text v0.4.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 )
+
+replace shared v0.0.0 => ../../pkg

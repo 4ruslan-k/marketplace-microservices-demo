@@ -3,7 +3,7 @@ package messaging
 import (
 	"context"
 	"encoding/json"
-	natsClient "notification_service/pkg/messaging/nats"
+	natsClient "shared/messaging/nats"
 
 	applicationServices "notification_service/internal/application/services"
 	notification "notification_service/internal/domain/entities/notification"

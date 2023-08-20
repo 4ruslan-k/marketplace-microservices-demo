@@ -15,7 +15,7 @@ import (
 	mongoRepositories "authentication_service/internal/infrastructure/repositories/mongodb"
 	httpServ "authentication_service/internal/transport/http"
 	middlewares "authentication_service/internal/transport/http/middlewares"
-	nats "authentication_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 )
 
 func buildDependencies() (*httpserver.Server, error) {

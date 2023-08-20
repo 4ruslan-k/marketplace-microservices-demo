@@ -10,7 +10,7 @@ import (
 	notificationEntity "notification_service/internal/domain/entities/notification"
 	"notification_service/internal/ports/repositories"
 	customErrors "notification_service/pkg/errors"
-	nats "notification_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	"github.com/rs/zerolog"
 )

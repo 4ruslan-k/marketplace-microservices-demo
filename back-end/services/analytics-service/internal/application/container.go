@@ -16,7 +16,7 @@ import (
 
 	domainServices "analytics_service/internal/domain/services"
 	userInfraRepository "analytics_service/internal/infrastructure/repositories/pg/user"
-	nats "analytics_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 
 	messaging "analytics_service/internal/transport/messaging"
 )

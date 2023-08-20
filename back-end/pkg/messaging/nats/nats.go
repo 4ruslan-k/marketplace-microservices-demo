@@ -25,18 +25,29 @@ type natsClient struct {
 	logger zerolog.Logger
 }
 
-func (n natsClient) PublishMessage(subject, message string) {
-	n.logger.Debug().Msgf("Publishing message to %s", subject)
-	_, err := n.js.Publish(subject, []byte(message))
+func NewNatsClient() *natsClient {
+	uri := os.Getenv("NATS_URI")
+	nc := newNatsConnection(uri)
+	js, err := nc.JetStream(nats.PublishAsyncMaxPending(256))
+	if err != nil {
+		panic(err)
+	}
+	serverNats := natsClient{nc: nc, js: js}
+	return &serverNats
+}
+
+func (n natsClient) PublishMessageEphemeral(subject, message string) {
+	n.logger.Debug().Msgf("Publishing ephemeral message to %s", subject)
+	err := n.nc.Publish(subject, []byte(message))
 
 	if err != nil {
 		log.Error().Err(err).Msg("createTask -> js.Publish")
 	}
 }
 
-func (n natsClient) PublishMessageEphemeral(subject, message string) {
-	n.logger.Debug().Msgf("Publishing ephemeral message to %s", subject)
-	err := n.nc.Publish(subject, []byte(message))
+func (n natsClient) PublishMessage(subject, message string) {
+	n.logger.Debug().Msgf("Publishing message to %s", subject)
+	_, err := n.js.Publish(subject, []byte(message))
 
 	if err != nil {
 		log.Error().Err(err).Msg("createTask -> js.Publish")
@@ -62,17 +73,6 @@ func newNatsConnection(uri string) *nats.Conn {
 	}
 	log.Info().Msgf("Successfully connected to NATS at: %s", uri)
 	return nc
-}
-
-func NewNatsClient() *natsClient {
-	uri := os.Getenv("NATS_URI")
-	nc := newNatsConnection(uri)
-	js, err := nc.JetStream(nats.PublishAsyncMaxPending(256))
-	if err != nil {
-		panic(err)
-	}
-	serverNats := natsClient{nc: nc, js: js}
-	return &serverNats
 }
 
 func (n natsClient) CreateStream(streamName string, streamSubjects string) error {

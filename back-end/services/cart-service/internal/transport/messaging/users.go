@@ -1,9 +1,9 @@
 package messaging
 
 import (
-	natsClient "cart_service/pkg/messaging/nats"
 	"context"
 	"encoding/json"
+	natsClient "shared/messaging/nats"
 
 	"cart_service/internal/application/dto"
 	applicationServices "cart_service/internal/application/services"

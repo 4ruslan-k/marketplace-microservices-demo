@@ -15,7 +15,7 @@ import (
 
 	domainDto "authentication_service/internal/application/dto"
 	customErrors "authentication_service/pkg/errors"
-	nats "authentication_service/pkg/messaging/nats"
+	nats "shared/messaging/nats"
 )
 
 var (

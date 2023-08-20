@@ -4,8 +4,8 @@ services:
     env_file:
       - ./back-end/services/gateway-service/.env.docker
     build:
-      context: ./back-end/services/gateway-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/gateway-service/Dockerfile.dev
     volumes:
       - ./back-end/services/gateway-service/:/app
     ports:
@@ -17,8 +17,8 @@ services:
     env_file:
       - ./back-end/services/catalog-service/.env.docker
     build:
-      context: ./back-end/services/catalog-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/catalog-service/Dockerfile.dev
     volumes:
       - ./back-end/services/catalog-service/:/app
     ports:
@@ -28,8 +28,8 @@ services:
     env_file:
       - ./back-end/services/authentication-service/.env.docker
     build:
-      context: ./back-end/services/authentication-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/authentication-service/Dockerfile.dev
     volumes:
       - ./back-end/services/authentication-service/:/app
     ports:
@@ -56,8 +56,8 @@ services:
     env_file:
     - ./back-end/services/customer-service/.env.docker
     build:
-      context: ./back-end/services/customer-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/customer-service/Dockerfile.dev
     volumes:
       - ./back-end/services/customer-service/:/app:rw,delegated
     ports:
@@ -70,8 +70,8 @@ services:
     env_file:
     - ./back-end/services/cart-service/.env.docker
     build:
-      context: ./back-end/services/cart-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/cart-service/Dockerfile.dev
     volumes:
       - ./back-end/services/cart-service/:/app:rw,delegated
     ports:
@@ -84,8 +84,8 @@ services:
     env_file:
     - ./back-end/services/notification-service/.env.docker
     build:
-      context: ./back-end/services/notification-service/
-      dockerfile: Dockerfile.dev
+      context: ./back-end
+      dockerfile: ./services/notification-service/Dockerfile.dev
     environment:
       - ./back-end/services/notification-service/:/app
     volumes:

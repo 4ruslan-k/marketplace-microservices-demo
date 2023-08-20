@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog"
 
 	"catalog_service/config"
-	"catalog_service/pkg/nats"
 	pgStorage "catalog_service/pkg/storage/pg"
+	nats "shared/messaging/nats"
 
 	applicationServices "catalog_service/internal/application/services"
 

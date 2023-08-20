@@ -1,9 +1,9 @@
 package messaging
 
 import (
-	natsClient "analytics_service/pkg/messaging/nats"
 	"context"
 	"encoding/json"
+	natsClient "shared/messaging/nats"
 
 	"analytics_service/internal/application/dto"
 	applicationServices "analytics_service/internal/application/services"
