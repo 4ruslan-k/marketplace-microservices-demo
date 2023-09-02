@@ -26,10 +26,10 @@ import (
 	applicationServices "authentication/internal/services"
 	dto "authentication/internal/services/dto"
 
+	mocks "authentication/internal/mocks/nats"
 	authRepo "authentication/internal/repositories/authentication"
 	userRepo "authentication/internal/repositories/user"
 	middlewares "authentication/internal/transport/http/middlewares"
-	mocks "authentication/mocks"
 )
 
 var mongoURI string
@@ -281,7 +281,7 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 		func() caseType {
 			randomUser := fixtures.GenerateUserEntity(t, fixtures.CreateTestUser{})
 			return caseType{
-				name: "err_user_not_found",
+				name: "error_user_not_found",
 				input: in{
 					email:    randomUser.Email(),
 					password: "wgwgwe#32r2",
@@ -294,7 +294,7 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 		func() caseType {
 			email := fixtures.GenerateRandomEmail()
 			return caseType{
-				name: "err_invalid_password",
+				name: "error_invalid_password",
 				input: in{
 					email:    email,
 					password: "wgwgwe#32r2",
@@ -398,7 +398,7 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "err_user_not_found",
+				name:   "error_user_not_found",
 				in:     in{userID: userID},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 			}
@@ -585,7 +585,7 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 		func() caseType {
 			name := fixtures.GenerateRandomName()
 			return caseType{
-				name: "err_empty_email",
+				name: "error_empty_email",
 				input: dto.SocialLoginInput{
 					Provider:  "google",
 					Email:     "",
@@ -600,7 +600,7 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 		func() caseType {
 			name := fixtures.GenerateRandomName()
 			return caseType{
-				name: "err_empty_provider",
+				name: "error_empty_provider",
 				input: dto.SocialLoginInput{
 					Provider:  "",
 					Email:     "example@gmail.com",
@@ -706,7 +706,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name: "err_passwords_not_match",
+				name: "error_passwords_not_match",
 				input: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
@@ -721,7 +721,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 			newPass := "1234"
 
 			return caseType{
-				name: "err_user_not_found",
+				name: "error_user_not_found",
 				input: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
@@ -736,7 +736,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 			password := "h5h54h$%H45h45h4h"
 			newPass := "1234"
 			return caseType{
-				name: "err_invalid_current_password",
+				name: "error_invalid_current_password",
 				input: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
@@ -754,7 +754,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 			password := "h5h54h$%H45h45h4h"
 			newPass := "1234"
 			return caseType{
-				name: "err_invalid_current_password",
+				name: "error_invalid_current_password",
 				input: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         password,
@@ -806,7 +806,7 @@ func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "err_user_not_found",
+				name:   "error_user_not_found",
 				userID: userID,
 				expErr: applicationServices.ErrNoUserByID,
 			}
@@ -868,7 +868,7 @@ func TestUserApplicationService_EnableTotp(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "err_user_not_found",
+				name:   "error_user_not_found",
 				userID: userID,
 				expErr: applicationServices.ErrNoUserByID,
 			}
@@ -966,7 +966,7 @@ func TestUserApplicationService_DisableTotp(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "err_user_not_found",
+				name:   "error_user_not_found",
 				userID: userID,
 				expErr: applicationServices.ErrNoUserByID,
 			}

@@ -171,7 +171,7 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 	cases := []func() caseType{
 		func() caseType {
 			return caseType{
-				name:   "err_empty_type_id",
+				name:   "error_empty_type_id",
 				userID: "",
 				expErr: applicationServices.ErrInvalidUserID,
 			}
@@ -258,7 +258,7 @@ func TestUserApplicationService_ViewNotification(t *testing.T) {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "err_notification_not_found",
+				name:   "error_notification_not_found",
 				input:  Input{userID: userID, userNotificationID: userNotificationID},
 				expErr: applicationServices.ErrNotificationNotFound,
 			}

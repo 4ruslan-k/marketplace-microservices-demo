@@ -31,7 +31,7 @@ func TestCartEntity_NewCart(t *testing.T) {
 		expErr error
 	}{
 		{
-			name: "err_invalid_customer_id",
+			name: "error_invalid_customer_id",
 			in: cartEntity.CreateCartParams{
 				CustomerID: "",
 			},

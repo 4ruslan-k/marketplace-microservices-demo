@@ -1,7 +1,7 @@
 BIN_DIR := $(shell pwd)/bin
 ENV_FILE_PATH := $(shell pwd)/.env
 binDir := $(shell pwd)/bin
-MOCKS_DESTINATION=mocks
+MOCKS_DESTINATION=internal/mocks
 
 .PHONY: test
 test:
@@ -37,10 +37,8 @@ lint:
 	@$(binDir)/golangci-lint run -v
 
 .PHONY: mocks
-# put the files with interfaces you'd like to mock in prerequisites
-# wildcards are allowed
-mocks: pkg/messaging/nats/nats.go
-	@echo "Generating mocks..."
-	@rm -rf $(MOCKS_DESTINATION)
-	@for file in $^; do ${BIN_DIR}/mockgen -source=$$file -destination=$(MOCKS_DESTINATION)/$$file; done
+mocks:  
+	${BIN_DIR}/mockgen -source=internal/services/user.go -destination=$(MOCKS_DESTINATION)/services/user.go
+	${BIN_DIR}/mockgen -source=internal/repositories/authentication/interface.go -destination=$(MOCKS_DESTINATION)/repositories/authentication/interface.go
+	${BIN_DIR}/mockgen -source=pkg/nats/interface.go -destination=$(MOCKS_DESTINATION)/nats/nats.go
 	@echo "Mocks are generated at /$(MOCKS_DESTINATION)"
