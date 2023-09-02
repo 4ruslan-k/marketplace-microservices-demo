@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
 )
@@ -63,19 +61,6 @@ func NewConfig() (*Config, error) {
 }
 
 func NewTestConfig() (*Config, error) {
-
 	cfg := &Config{}
-	absPath, _ := filepath.Abs("../../config/config_test.yml")
-
-	err := cleanenv.ReadConfig(absPath, cfg)
-
-	if err != nil {
-		return nil, fmt.Errorf("config error: %w", err)
-	}
-
-	err = cleanenv.ReadEnv(cfg)
-	if err != nil {
-		return nil, err
-	}
 	return cfg, nil
 }

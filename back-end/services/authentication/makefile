@@ -41,4 +41,5 @@ mocks:
 	${BIN_DIR}/mockgen -source=internal/services/user.go -destination=$(MOCKS_DESTINATION)/services/user.go
 	${BIN_DIR}/mockgen -source=internal/repositories/authentication/interface.go -destination=$(MOCKS_DESTINATION)/repositories/authentication/interface.go
 	${BIN_DIR}/mockgen -source=pkg/nats/interface.go -destination=$(MOCKS_DESTINATION)/nats/nats.go
+	${BIN_DIR}/mockgen -source=internal/transport/http/controllers/user_controller.go -destination=$(MOCKS_DESTINATION)/sessions/session.go
 	@echo "Mocks are generated at /$(MOCKS_DESTINATION)"

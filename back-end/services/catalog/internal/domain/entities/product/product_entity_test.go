@@ -10,7 +10,8 @@ import (
 )
 
 func TestNewProduct(t *testing.T) {
-	type expRes struct {
+	t.Parallel()
+	type want struct {
 		Name      string
 		Price     float64
 		Quantity  int
@@ -19,18 +20,18 @@ func TestNewProduct(t *testing.T) {
 	}
 	testCases := []struct {
 		name   string
-		in     product.CreateProductParams
-		expRes expRes
+		args   product.CreateProductParams
+		want   want
 		expErr error
 	}{
 		{
 			name: "ValidParams_ReturnsProduct",
-			in: product.CreateProductParams{
+			args: product.CreateProductParams{
 				Name:     "Test Product",
 				Price:    9.99,
 				Quantity: 10,
 			},
-			expRes: expRes{
+			want: want{
 				Name:      "Test Product",
 				Price:     9.99,
 				Quantity:  10,
@@ -40,41 +41,44 @@ func TestNewProduct(t *testing.T) {
 		},
 		{
 			name: "InvalidName_ReturnsError",
-			in: product.CreateProductParams{
+			args: product.CreateProductParams{
 				Name:     "",
 				Price:    0,
 				Quantity: 10,
 			},
-			expRes: expRes{},
+			want:   want{},
 			expErr: product.ErrInvalidProductName,
 		},
 		{
 			name: "InvalidPrice_ReturnsError",
-			in: product.CreateProductParams{
+			args: product.CreateProductParams{
 				Name:     "Test Product",
 				Price:    0,
 				Quantity: 10,
 			},
-			expRes: expRes{},
+			want:   want{},
 			expErr: product.ErrInvalidProductPrice,
 		},
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			p, err := product.NewProduct(tc.in)
+			t.Parallel()
+			p, err := product.NewProduct(tc.args)
 
 			require.Equal(t, tc.expErr, err)
-			assert.Equal(t, tc.expRes.Name, p.Name())
-			assert.Equal(t, tc.expRes.Price, p.Price())
-			assert.Equal(t, tc.expRes.Quantity, p.Quantity())
+			assert.Equal(t, tc.want.Name, p.Name())
+			assert.Equal(t, tc.want.Price, p.Price())
+			assert.Equal(t, tc.want.Quantity, p.Quantity())
 			maxDelta := 2 * time.Millisecond
-			assert.True(t, tc.expRes.CreatedAt.Sub(p.CreatedAt()) <= maxDelta)
+			assert.True(t, tc.want.CreatedAt.Sub(p.CreatedAt()) <= maxDelta)
 		})
 	}
 }
 
 func TestNewProductFromDatabase(t *testing.T) {
+	t.Parallel()
 	id := "123"
 	name := "Test Product"
 	price := 9.99

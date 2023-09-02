@@ -7,9 +7,9 @@ import (
 	middlewares "authentication/internal/transport/http/middlewares"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewRouter(
@@ -18,15 +18,16 @@ func NewRouter(
 	m middlewares.Middlewares,
 	logger zerolog.Logger,
 	config *config.Config,
-	mb *mongo.Database,
+	sessionsStore sessions.Store,
+	sessionManager controllers.SessionManager,
 ) {
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
 	handler.Use(m.Session.Apply)
 	handler.GET("/health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
-	controllers.SetupSocialLogin(mb, config)
-	r := controllers.NewUserControllers(u, logger, config)
+	controllers.SetupSocialLogin(sessionsStore, config)
+	r := controllers.NewUserControllers(u, logger, config, sessionManager)
 
 	v1 := handler.Group("/v1")
 

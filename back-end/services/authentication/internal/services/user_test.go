@@ -89,64 +89,75 @@ func NewTestApplicationService(
 }
 
 func TestUserApplicationService_CreateUser(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	mongo := storage.NewMongoClient(logger, testConf)
-	applicationService, _, _ := NewTestApplicationService(testConf, mongo, logger, t)
+	applicationService, userRepository, _ := NewTestApplicationService(testConf, mongo, logger, t)
 
 	email := fixtures.GenerateRandomEmail()
-	cases := []struct {
-		name   string
-		input  userEntity.CreateUserParams
-		output *dto.UserOutput
-		expErr error
+	testCases := []struct {
+		name             string
+		args             userEntity.CreateUserParams
+		generateTestData func()
+		want             *dto.UserOutput
+		expErr           error
 	}{
 		{
-			name:  "valid_input",
-			input: userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: email},
-			output: &dto.UserOutput{
+			name: "valid_input",
+			args: userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: email},
+			want: &dto.UserOutput{
 				Name:  "Joe",
 				Email: email,
 			},
 			expErr: nil,
 		},
 		{
-			name:   "duplicated_email",
-			input:  userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: email},
-			output: nil,
+			name: "duplicated_email",
+			args: userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: email},
+			generateTestData: func() {
+				fixtures.IngestUser(t, fixtures.CreateTestUser{Email: email}, userRepository.Create)
+			},
+			want:   nil,
 			expErr: domainServices.ErrorEmailIsTaken,
 		},
 		{
 			name:   "invalid_input_wrong_email_format",
-			input:  userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: "example@"},
-			output: nil,
+			args:   userEntity.CreateUserParams{Name: "Joe", Password: "joe", Email: "example@"},
+			want:   nil,
 			expErr: userEntity.ErrInvalidEmailFormat,
 		},
 		{
 			name:   "invalid_input_empty_password",
-			input:  userEntity.CreateUserParams{Name: "Joe", Password: "", Email: "example@gmail.com"},
-			output: &dto.UserOutput{},
+			args:   userEntity.CreateUserParams{Name: "Joe", Password: "", Email: "example@gmail.com"},
+			want:   &dto.UserOutput{},
 			expErr: domainServices.ErrInvalidPassword,
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
+		tCase := tCase
 		t.Run(tCase.name, func(t *testing.T) {
-			u, err := applicationService.CreateUser(context.Background(), tCase.input)
+			t.Parallel()
+			if tCase.generateTestData != nil {
+				tCase.generateTestData()
+			}
+			u, err := applicationService.CreateUser(context.Background(), tCase.args)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
 			require.NotNil(t, u)
-			require.Equal(t, tCase.output.Email, u.Email)
-			require.Equal(t, tCase.output.Name, u.Name)
+			require.Equal(t, tCase.want.Email, u.Email)
+			require.Equal(t, tCase.want.Name, u.Name)
 
 		})
 	}
 }
 
 func TestUserApplicationService_UpdateUser(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -156,53 +167,55 @@ func TestUserApplicationService_UpdateUser(t *testing.T) {
 	type caseType struct {
 		name             string
 		generateTestData func()
-		input            dto.UpdateUserInput
-		output           *dto.UserOutput
+		args             dto.UpdateUserInput
+		want             *dto.UserOutput
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
 				name:   "error_user_not_found",
-				input:  dto.UpdateUserInput{ID: userID, Name: "John"},
+				args:   dto.UpdateUserInput{ID: userID, Name: "John"},
 				expErr: applicationServices.ErrUserNotFound,
 			}
 		},
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_user_updated",
-				input:  dto.UpdateUserInput{ID: userID, Name: "John"},
+				name:   "user_updated",
+				args:   dto.UpdateUserInput{ID: userID, Name: "John"},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID}, userRepository.Create)
 				},
-				output: &dto.UserOutput{ID: userID},
+				want: &dto.UserOutput{ID: userID},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
-			u, err := applicationService.UpdateUser(context.Background(), testData.input)
+			u, err := applicationService.UpdateUser(context.Background(), testData.args)
 			if testData.expErr != nil {
 				require.ErrorContains(t, err, testData.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
 			require.NotNil(t, u)
-			require.Equal(t, testData.output.ID, u.ID)
+			require.Equal(t, testData.want.ID, u.ID)
 		})
 	}
 }
 
 func TestUserApplicationService_DeleteUser(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -212,24 +225,24 @@ func TestUserApplicationService_DeleteUser(t *testing.T) {
 	type caseType struct {
 		name             string
 		generateTestData func()
-		input            dto.DeleteUserInput
+		args             dto.DeleteUserInput
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
 				name:   "error_user_not_found",
-				input:  dto.DeleteUserInput{ID: userID},
+				args:   dto.DeleteUserInput{ID: userID},
 				expErr: applicationServices.ErrUserNotFound,
 			}
 		},
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_user_deleted",
-				input:  dto.DeleteUserInput{ID: userID},
+				name:   "user_deleted",
+				args:   dto.DeleteUserInput{ID: userID},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID}, userRepository.Create)
@@ -238,19 +251,20 @@ func TestUserApplicationService_DeleteUser(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
-			err := applicationService.DeleteUser(context.Background(), testData.input)
+			err := applicationService.DeleteUser(context.Background(), testData.args)
 			if testData.expErr != nil {
 				require.ErrorContains(t, err, testData.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
-			user, err := userRepository.GetByID(context.Background(), testData.input.ID)
+			user, err := userRepository.GetByID(context.Background(), testData.args.ID)
 			require.Nil(t, user)
 			require.NoError(t, err)
 		})
@@ -258,12 +272,13 @@ func TestUserApplicationService_DeleteUser(t *testing.T) {
 }
 
 func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	mongo := storage.NewMongoClient(logger, testConf)
 	applicationService, userRepository, authenticationRepository := NewTestApplicationService(testConf, mongo, logger, t)
 
-	type in struct {
+	type args struct {
 		email        string
 		password     string
 		isMfaEnabled bool
@@ -272,21 +287,21 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 	type caseType struct {
 		seedUser fixtures.CreateTestUser
 		name     string
-		input    in
-		output   *dto.LoginOutput
+		args     args
+		want     *dto.LoginOutput
 		expErr   error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			randomUser := fixtures.GenerateUserEntity(t, fixtures.CreateTestUser{})
 			return caseType{
 				name: "error_user_not_found",
-				input: in{
+				args: args{
 					email:    randomUser.Email(),
 					password: "wgwgwe#32r2",
 				},
-				output:   &dto.LoginOutput{Email: randomUser.Email()},
+				want:     &dto.LoginOutput{Email: randomUser.Email()},
 				seedUser: fixtures.CreateTestUser{},
 				expErr:   applicationServices.ErrNoUserByEmail,
 			}
@@ -295,7 +310,7 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 			email := fixtures.GenerateRandomEmail()
 			return caseType{
 				name: "error_invalid_password",
-				input: in{
+				args: args{
 					email:    email,
 					password: "wgwgwe#32r2",
 				},
@@ -313,11 +328,11 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 			name := "Sam"
 			return caseType{
 				name: "valid_login",
-				input: in{
+				args: args{
 					email:    user.Email(),
 					password: password,
 				},
-				output: &dto.LoginOutput{Email: user.Email(), Name: name},
+				want: &dto.LoginOutput{Email: user.Email(), Name: name},
 				seedUser: fixtures.CreateTestUser{
 					Name:     name,
 					Email:    user.Email(),
@@ -331,12 +346,12 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 			name := "Sam"
 			return caseType{
 				name: "valid_login_mfa_enabled",
-				input: in{
+				args: args{
 					email:        user.Email(),
 					password:     password,
 					isMfaEnabled: true,
 				},
-				output: &dto.LoginOutput{Email: "", Name: ""},
+				want: &dto.LoginOutput{Email: "", Name: ""},
 				seedUser: fixtures.CreateTestUser{
 					Name:         name,
 					Email:        user.Email(),
@@ -347,14 +362,15 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			fixtures.IngestUser(t, tCase.seedUser, userRepository.Create)
 			u, err := applicationService.LoginWithEmailAndPassword(
 				context.Background(),
-				tCase.input.email,
-				tCase.input.password,
+				tCase.args.email,
+				tCase.args.password,
 			)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
@@ -362,10 +378,10 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.NotNil(t, u)
-			require.Equal(t, tCase.output.Email, u.Email)
-			require.Equal(t, tCase.output.Name, u.Name)
+			require.Equal(t, tCase.want.Email, u.Email)
+			require.Equal(t, tCase.want.Name, u.Name)
 
-			if tCase.input.isMfaEnabled {
+			if tCase.args.isMfaEnabled {
 				token, err := authenticationRepository.GetPasswordVerificationTokenByID(context.Background(), u.PasswordVerificationTokenID)
 				require.NoError(t, err)
 				require.Equal(t, false, token.HasExpired(time.Now()))
@@ -375,13 +391,14 @@ func TestUserApplicationService_LoginWithEmailAndPassword(t *testing.T) {
 }
 
 func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
 
 	applicationService, userRepository, authenticationRepository := NewTestApplicationService(testConf, mongo, logger, t)
 
-	type in struct {
+	type args struct {
 		userID                      string
 		otpCode                     string
 		passwordVerificationTokenID string
@@ -391,15 +408,15 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 		name             string
 		generateTestData func()
 		expErr           error
-		in               in
+		args             args
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
 				name:   "error_user_not_found",
-				in:     in{userID: userID},
+				args:   args{userID: userID},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 			}
 		},
@@ -407,7 +424,7 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 			userID := fixtures.GenerateUUID()
 			return caseType{
 				name:   "error_not_valid_code_empty_secret",
-				in:     in{userID: userID},
+				args:   args{userID: userID},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID}, userRepository.Create)
@@ -423,7 +440,7 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 			secret := key.Secret()
 			return caseType{
 				name:   "error_not_valid_code_valid_secret",
-				in:     in{userID: userID, otpCode: "634212"},
+				args:   args{userID: userID, otpCode: "634212"},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID, TotpSecret: secret, IsMfaEnabled: true}, userRepository.Create)
@@ -443,8 +460,8 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 				t.Fatal(err)
 			}
 			return caseType{
-				name:   "ok_login_with_totp",
-				in:     in{userID: userID, otpCode: code, passwordVerificationTokenID: passwordVerificationTokenID},
+				name:   "login_with_totp",
+				args:   args{userID: userID, otpCode: code, passwordVerificationTokenID: passwordVerificationTokenID},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID, TotpSecret: secret}, userRepository.Create)
@@ -468,7 +485,7 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 			secret := key.Secret()
 			return caseType{
 				name:   "error_wrong_code",
-				in:     in{userID: userID, otpCode: "535356", passwordVerificationTokenID: passwordVerificationTokenID},
+				args:   args{userID: userID, otpCode: "535356", passwordVerificationTokenID: passwordVerificationTokenID},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID, TotpSecret: secret}, userRepository.Create)
@@ -496,7 +513,7 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 			}
 			return caseType{
 				name:   "error_expired_password_verification_token",
-				in:     in{userID: userID, otpCode: code, passwordVerificationTokenID: passwordVerificationTokenID},
+				args:   args{userID: userID, otpCode: code, passwordVerificationTokenID: passwordVerificationTokenID},
 				expErr: applicationServices.ErrTotpCodeNotValid,
 				generateTestData: func() {
 					fixtures.IngestUser(t, fixtures.CreateTestUser{ID: userID, TotpSecret: secret}, userRepository.Create)
@@ -512,28 +529,30 @@ func TestUserApplicationService_LoginWithTotpCode(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
 			loginOutput, err := applicationService.LoginWithTotpCode(
 				context.Background(),
-				testData.in.passwordVerificationTokenID,
-				testData.in.otpCode,
+				testData.args.passwordVerificationTokenID,
+				testData.args.otpCode,
 			)
 			if testData.expErr != nil {
 				require.ErrorContains(t, err, testData.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
-			require.Equal(t, testData.in.userID, loginOutput.ID)
+			require.Equal(t, testData.args.userID, loginOutput.ID)
 		})
 	}
 }
 
 func TestUserApplicationService_SocialLogin(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -543,24 +562,24 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 	type caseType struct {
 		seedUser fixtures.CreateTestUser
 		name     string
-		input    dto.SocialLoginInput
-		output   *dto.UserOutput
+		args     dto.SocialLoginInput
+		want     *dto.UserOutput
 		expErr   error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			randomUser := fixtures.GenerateUserEntity(t, fixtures.CreateTestUser{})
 			return caseType{
-				name: "ok_user_created_and_logged_in",
-				input: dto.SocialLoginInput{
+				name: "user_created_and_logged_in",
+				args: dto.SocialLoginInput{
 					Provider:  "google",
 					Email:     randomUser.Email(),
 					Name:      randomUser.Name(),
 					UserID:    "s",
 					AvatarURL: "",
 				},
-				output: &dto.UserOutput{Email: randomUser.Email(), Name: randomUser.Name()},
+				want:   &dto.UserOutput{Email: randomUser.Email(), Name: randomUser.Name()},
 				expErr: nil,
 			}
 		},
@@ -569,15 +588,15 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 			name := fixtures.GenerateRandomName()
 
 			return caseType{
-				name: "ok_already_created_user_logged_in",
-				input: dto.SocialLoginInput{
+				name: "already_created_user_logged_in",
+				args: dto.SocialLoginInput{
 					Provider:  "google",
 					Email:     email,
 					Name:      name,
 					UserID:    "s",
 					AvatarURL: "",
 				},
-				output:   &dto.UserOutput{Email: email, Name: name},
+				want:     &dto.UserOutput{Email: email, Name: name},
 				expErr:   nil,
 				seedUser: fixtures.CreateTestUser{Email: email, Name: name},
 			}
@@ -586,14 +605,14 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 			name := fixtures.GenerateRandomName()
 			return caseType{
 				name: "error_empty_email",
-				input: dto.SocialLoginInput{
+				args: dto.SocialLoginInput{
 					Provider:  "google",
 					Email:     "",
 					Name:      name,
 					UserID:    "s",
 					AvatarURL: "",
 				},
-				output: nil,
+				want:   nil,
 				expErr: userEntity.ErrInvalidEmailFormat,
 			}
 		},
@@ -601,26 +620,27 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 			name := fixtures.GenerateRandomName()
 			return caseType{
 				name: "error_empty_provider",
-				input: dto.SocialLoginInput{
+				args: dto.SocialLoginInput{
 					Provider:  "",
 					Email:     "example@gmail.com",
 					Name:      name,
 					UserID:    "s",
 					AvatarURL: "",
 				},
-				output: nil,
+				want:   nil,
 				expErr: socialAccountEntity.ErrInvalidProvider,
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			fixtures.IngestUser(t, tCase.seedUser, userRepository.Create)
 			u, err := applicationService.SocialLogin(
 				context.Background(),
-				tCase.input,
+				tCase.args,
 			)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
@@ -628,13 +648,14 @@ func TestUserApplicationService_SocialLogin(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.NotNil(t, u)
-			require.Equal(t, tCase.output.Email, u.Email)
-			require.Equal(t, tCase.output.Name, u.Name)
+			require.Equal(t, tCase.want.Email, u.Email)
+			require.Equal(t, tCase.want.Name, u.Name)
 		})
 	}
 }
 
 func TestUserApplicationService_GetUserByID(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -644,51 +665,53 @@ func TestUserApplicationService_GetUserByID(t *testing.T) {
 	type caseType struct {
 		seedUser fixtures.CreateTestUser
 		name     string
-		input    string
-		output   *dto.UserOutput
+		args     string
+		want     *dto.UserOutput
 		expErr   error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			return caseType{
-				name:   "ok_user_not_found",
-				input:  "123",
-				output: nil,
+				name:   "user_not_found",
+				args:   "123",
+				want:   nil,
 				expErr: nil,
 			}
 		},
 		func() caseType {
 			seedUser := fixtures.GenerateUserEntity(t, fixtures.CreateTestUser{})
 			return caseType{
-				name:     "ok_user_found",
-				input:    seedUser.ID(),
-				output:   &dto.UserOutput{ID: seedUser.ID(), Email: seedUser.Email(), Name: seedUser.Name()},
+				name:     "user_found",
+				args:     seedUser.ID(),
+				want:     &dto.UserOutput{ID: seedUser.ID(), Email: seedUser.Email(), Name: seedUser.Name()},
 				expErr:   nil,
 				seedUser: fixtures.CreateTestUser{ID: seedUser.ID(), Email: seedUser.Email(), Name: seedUser.Name()},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			fixtures.IngestUser(t, tCase.seedUser, userRepository.Create)
 			u, err := applicationService.GetUserByID(
 				context.Background(),
-				tCase.input,
+				tCase.args,
 			)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
-			require.Equal(t, tCase.output, u)
+			require.Equal(t, tCase.want, u)
 		})
 	}
 }
 
 func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -698,16 +721,16 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 	type caseType struct {
 		name             string
 		generateTestData func()
-		input            dto.ChangeCurrentPasswordInput
+		args             dto.ChangeCurrentPasswordInput
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
 				name: "error_passwords_not_match",
-				input: dto.ChangeCurrentPasswordInput{
+				args: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
 					NewPassword:             "1234",
@@ -722,7 +745,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 
 			return caseType{
 				name: "error_user_not_found",
-				input: dto.ChangeCurrentPasswordInput{
+				args: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
 					NewPassword:             newPass,
@@ -737,7 +760,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 			newPass := "1234"
 			return caseType{
 				name: "error_invalid_current_password",
-				input: dto.ChangeCurrentPasswordInput{
+				args: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         "123",
 					NewPassword:             newPass,
@@ -755,7 +778,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 			newPass := "1234"
 			return caseType{
 				name: "error_invalid_current_password",
-				input: dto.ChangeCurrentPasswordInput{
+				args: dto.ChangeCurrentPasswordInput{
 					UserID:                  userID,
 					CurrentPassword:         password,
 					NewPassword:             newPass,
@@ -769,15 +792,16 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
 			err := applicationService.ChangeCurrentPassword(
 				context.Background(),
-				testData.input,
+				testData.args,
 			)
 			if testData.expErr != nil {
 				require.ErrorContains(t, err, testData.expErr.Error())
@@ -789,6 +813,7 @@ func TestUserApplicationService_ChangeCurrentPassword(t *testing.T) {
 }
 
 func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -802,7 +827,7 @@ func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
@@ -814,7 +839,7 @@ func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_generate_totp_setup",
+				name:   "generate_totp_setup",
 				userID: userID,
 				expErr: nil,
 				generateTestData: func() {
@@ -824,9 +849,10 @@ func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
@@ -850,6 +876,7 @@ func TestUserApplicationService_GenerateTotpSetup(t *testing.T) {
 }
 
 func TestUserApplicationService_EnableTotp(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -864,7 +891,7 @@ func TestUserApplicationService_EnableTotp(t *testing.T) {
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
@@ -913,7 +940,7 @@ func TestUserApplicationService_EnableTotp(t *testing.T) {
 				t.Fatal(err)
 			}
 			return caseType{
-				name:    "ok_enable_totp",
+				name:    "enable_totp",
 				userID:  userID,
 				otpCode: code,
 				expErr:  nil,
@@ -924,9 +951,10 @@ func TestUserApplicationService_EnableTotp(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}
@@ -948,6 +976,7 @@ func TestUserApplicationService_EnableTotp(t *testing.T) {
 }
 
 func TestUserApplicationService_DisableTotp(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizedMongo(t)
 	logger := zerolog.New(os.Stdout)
 	mongo := storage.NewMongoClient(logger, testConf)
@@ -962,7 +991,7 @@ func TestUserApplicationService_DisableTotp(t *testing.T) {
 		expErr           error
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			return caseType{
@@ -1011,7 +1040,7 @@ func TestUserApplicationService_DisableTotp(t *testing.T) {
 				t.Fatal(err)
 			}
 			return caseType{
-				name:    "ok_disable_totp",
+				name:    "disable_totp",
 				userID:  userID,
 				otpCode: code,
 				expErr:  nil,
@@ -1022,9 +1051,10 @@ func TestUserApplicationService_DisableTotp(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		testData := tCase()
 		t.Run(testData.name, func(t *testing.T) {
+			t.Parallel()
 			if testData.generateTestData != nil {
 				testData.generateTestData()
 			}

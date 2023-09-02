@@ -9,16 +9,16 @@ import (
 )
 
 func TestUserPasswordVerificationTokenEntity_NewUser(t *testing.T) {
-
-	cases := []struct {
+	t.Parallel()
+	testCases := []struct {
 		name        string
-		in          passwordVerificationTokenEntity.CreatePasswordVerificationToken
+		args        passwordVerificationTokenEntity.CreatePasswordVerificationToken
 		currentTime time.Time
 		isExpired   bool
 	}{
 		{
 			name: "not expired (valid)",
-			in: passwordVerificationTokenEntity.CreatePasswordVerificationToken{
+			args: passwordVerificationTokenEntity.CreatePasswordVerificationToken{
 				ID:                 "someIdToken",
 				UserID:             "userIdTest",
 				CurrentTime:        time.Now(),
@@ -29,7 +29,7 @@ func TestUserPasswordVerificationTokenEntity_NewUser(t *testing.T) {
 		},
 		{
 			name: "expired (not valid)",
-			in: passwordVerificationTokenEntity.CreatePasswordVerificationToken{
+			args: passwordVerificationTokenEntity.CreatePasswordVerificationToken{
 				ID:                 "someIdTokenOne",
 				UserID:             "userIdTest",
 				CurrentTime:        time.Now(),
@@ -40,13 +40,15 @@ func TestUserPasswordVerificationTokenEntity_NewUser(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
+		tCase := tCase
 		t.Run(tCase.name, func(t *testing.T) {
-			passwordVerificationToken := passwordVerificationTokenEntity.NewPasswordVerificationToken(tCase.in)
-			require.Equal(t, tCase.in.ID, passwordVerificationToken.ID())
-			require.Equal(t, tCase.in.UserID, passwordVerificationToken.UserID())
-			require.Equal(t, tCase.in.CurrentTime, passwordVerificationToken.CreatedAt())
-			require.Equal(t, tCase.in.CurrentTime.Add(tCase.in.ExpirationDuration), passwordVerificationToken.ExpiresAt())
+			t.Parallel()
+			passwordVerificationToken := passwordVerificationTokenEntity.NewPasswordVerificationToken(tCase.args)
+			require.Equal(t, tCase.args.ID, passwordVerificationToken.ID())
+			require.Equal(t, tCase.args.UserID, passwordVerificationToken.UserID())
+			require.Equal(t, tCase.args.CurrentTime, passwordVerificationToken.CreatedAt())
+			require.Equal(t, tCase.args.CurrentTime.Add(tCase.args.ExpirationDuration), passwordVerificationToken.ExpiresAt())
 			isExpired := passwordVerificationToken.HasExpired(tCase.currentTime)
 			require.Equal(t, tCase.isExpired, isExpired)
 		})

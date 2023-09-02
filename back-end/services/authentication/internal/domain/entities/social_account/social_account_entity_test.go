@@ -9,15 +9,15 @@ import (
 )
 
 func TestSocialAccountEntity_NewSocialAccount(t *testing.T) {
-
-	cases := []struct {
+	t.Parallel()
+	testCases := []struct {
 		name   string
-		in     socialAccountEntity.CreateSocialAccountParams
+		args   socialAccountEntity.CreateSocialAccountParams
 		expErr error
 	}{
 		{
 			name: "valid_input",
-			in: socialAccountEntity.CreateSocialAccountParams{
+			args: socialAccountEntity.CreateSocialAccountParams{
 				ID:       "id",
 				Name:     "name",
 				Email:    "example@gmail.coms",
@@ -26,7 +26,7 @@ func TestSocialAccountEntity_NewSocialAccount(t *testing.T) {
 		},
 		{
 			name: "bad_email_format",
-			in: socialAccountEntity.CreateSocialAccountParams{
+			args: socialAccountEntity.CreateSocialAccountParams{
 				ID:       "id",
 				Name:     "name",
 				Email:    "example.com",
@@ -36,7 +36,7 @@ func TestSocialAccountEntity_NewSocialAccount(t *testing.T) {
 		},
 		{
 			name: "empty_provider",
-			in: socialAccountEntity.CreateSocialAccountParams{
+			args: socialAccountEntity.CreateSocialAccountParams{
 				ID:       "id",
 				Name:     "name",
 				Email:    "example@gmail.com",
@@ -46,9 +46,11 @@ func TestSocialAccountEntity_NewSocialAccount(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
+		tCase := tCase
 		t.Run(tCase.name, func(t *testing.T) {
-			socialAccount, err := socialAccountEntity.NewSocialAccount(tCase.in)
+			t.Parallel()
+			socialAccount, err := socialAccountEntity.NewSocialAccount(tCase.args)
 			if tCase.expErr != nil {
 				require.Error(t, err)
 				require.EqualError(t, tCase.expErr, err.Error())

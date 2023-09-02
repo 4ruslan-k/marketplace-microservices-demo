@@ -48,8 +48,7 @@ func buildDependencies() (*httpserver.Server, error) {
 	middlewaresContainer := middlewares.Middlewares{
 		Session: session,
 	}
-
-	server := httpServ.NewHTTPServer(userApplicationService, gin.New(), middlewaresContainer, logger, config, mongo)
+	server := httpServ.NewHTTPServer(userApplicationService, gin.New(), middlewaresContainer, logger, config, sessionStore)
 
 	return server, nil
 }

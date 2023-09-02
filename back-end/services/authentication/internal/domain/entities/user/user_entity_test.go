@@ -9,15 +9,15 @@ import (
 )
 
 func TestUserEntity_NewUser(t *testing.T) {
-
-	cases := []struct {
+	t.Parallel()
+	testCases := []struct {
 		name   string
-		in     user.CreateUserParams
+		args   user.CreateUserParams
 		expErr error
 	}{
 		{
 			name: "valid_input",
-			in: user.CreateUserParams{
+			args: user.CreateUserParams{
 				Name:          "name",
 				Email:         "example@gmail.coms",
 				Password:      "example@gmail.coms",
@@ -26,7 +26,7 @@ func TestUserEntity_NewUser(t *testing.T) {
 		},
 		{
 			name: "bad_email_format",
-			in: user.CreateUserParams{
+			args: user.CreateUserParams{
 				Name:          "name",
 				Email:         "example.com",
 				Password:      "password",
@@ -36,7 +36,7 @@ func TestUserEntity_NewUser(t *testing.T) {
 		},
 		{
 			name: "empty_password",
-			in: user.CreateUserParams{
+			args: user.CreateUserParams{
 				Name:          "name",
 				Email:         "example@gmail.coms",
 				Password:      "",
@@ -46,9 +46,11 @@ func TestUserEntity_NewUser(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
+		tCase := tCase
 		t.Run(tCase.name, func(t *testing.T) {
-			user, err := user.NewUser(tCase.in)
+			t.Parallel()
+			user, err := user.NewUser(tCase.args)
 			if tCase.expErr != nil {
 				require.Error(t, err)
 				require.EqualError(t, tCase.expErr, err.Error())

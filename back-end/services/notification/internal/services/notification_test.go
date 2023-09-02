@@ -85,6 +85,7 @@ func NewTestApplicationService(
 }
 
 func TestUserApplicationService_CreateUserNotification(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
@@ -93,30 +94,25 @@ func TestUserApplicationService_CreateUserNotification(t *testing.T) {
 
 	type caseType struct {
 		name             string
-		input            notificationEntity.CreateUserNotificationParams
+		args             notificationEntity.CreateUserNotificationParams
 		expErr           error
 		generateTestData func()
-		cleanup          func()
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			return caseType{
 				name: "ok",
-				input: notificationEntity.CreateUserNotificationParams{
+				args: notificationEntity.CreateUserNotificationParams{
 					UserID:             fixtures.GenerateUUID(),
 					NotificationTypeID: notificationEntity.MFADisabledNotification.TypeID(),
-				},
-				generateTestData: func() {
-				},
-				cleanup: func() {
 				},
 			}
 		},
 		func() caseType {
 			return caseType{
 				name: "error_empty_user_id",
-				input: notificationEntity.CreateUserNotificationParams{
+				args: notificationEntity.CreateUserNotificationParams{
 					NotificationTypeID: notificationEntity.MFADisabledNotification.TypeID(),
 				},
 				expErr: notificationEntity.ErrUserIDEmpty,
@@ -124,36 +120,35 @@ func TestUserApplicationService_CreateUserNotification(t *testing.T) {
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			if tCase.generateTestData != nil {
 				tCase.generateTestData()
 			}
-			err := notificationApplicationService.CreateUserNotification(context.Background(), tCase.input)
+			err := notificationApplicationService.CreateUserNotification(context.Background(), tCase.args)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
-			notificationsList, err := notificationRepository.GetByUserID(context.Background(), tCase.input.UserID)
+			notificationsList, err := notificationRepository.GetByUserID(context.Background(), tCase.args.UserID)
 			require.NoError(t, err)
 			require.Equal(t, 1, len(notificationsList))
-			if tCase.cleanup != nil {
-				tCase.cleanup()
-			}
 		})
 	}
 }
 
 func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
-	type Input struct {
+	type args struct {
 		userID           string
 		notificationType string
 		viewedAt         time.Time
@@ -162,13 +157,12 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 	type caseType struct {
 		name             string
 		userID           string
-		input            Input
+		args             args
 		expErr           error
 		generateTestData func()
-		cleanup          func()
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			return caseType{
 				name:   "error_empty_type_id",
@@ -181,8 +175,8 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 			viewedAt := time.Now()
 			notificationType := notificationEntity.MFADisabledNotification.TypeID()
 			return caseType{
-				name: "ok_create_notification",
-				input: Input{
+				name: "create_notification",
+				args: args{
 					userID:           userID,
 					notificationType: notificationType,
 					viewedAt:         viewedAt,
@@ -201,16 +195,14 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 						notificationRepository.CreateUserNotification,
 					)
 				},
-				cleanup: func() {
-
-				},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			if tCase.generateTestData != nil {
 				tCase.generateTestData()
 			}
@@ -223,43 +215,39 @@ func TestUserApplicationService_GetNotificationsByUserID(t *testing.T) {
 			require.Equal(t, 1, len(notifications.Notifications))
 
 			notification := notifications.Notifications[0]
-			require.Equal(t, tCase.input.notificationType, notification.NotificationTypeID)
-			require.Equal(t, tCase.input.viewedAt.Format(time.RFC3339), notification.ViewedAt.Local().Format(time.RFC3339))
-
-			if tCase.cleanup != nil {
-				tCase.cleanup()
-			}
+			require.Equal(t, tCase.args.notificationType, notification.NotificationTypeID)
+			require.Equal(t, tCase.args.viewedAt.Format(time.RFC3339), notification.ViewedAt.Local().Format(time.RFC3339))
 		})
 	}
 }
 
 func TestUserApplicationService_ViewNotification(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
-	type Input struct {
+	type args struct {
 		userID             string
 		userNotificationID string
 	}
 
 	type caseType struct {
 		name             string
-		input            Input
+		args             args
 		expErr           error
 		generateTestData func()
-		cleanup          func()
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
 				name:   "error_notification_not_found",
-				input:  Input{userID: userID, userNotificationID: userNotificationID},
+				args:   args{userID: userID, userNotificationID: userNotificationID},
 				expErr: applicationServices.ErrNotificationNotFound,
 			}
 		},
@@ -267,8 +255,8 @@ func TestUserApplicationService_ViewNotification(t *testing.T) {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_view_one_notification",
-				input:  Input{userID: userID, userNotificationID: userNotificationID},
+				name:   "view_one_notification",
+				args:   args{userID: userID, userNotificationID: userNotificationID},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.InsertUserNotification(
@@ -282,65 +270,60 @@ func TestUserApplicationService_ViewNotification(t *testing.T) {
 						notificationRepository.CreateUserNotification,
 					)
 				},
-				cleanup: func() {
-				},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			if tCase.generateTestData != nil {
 				tCase.generateTestData()
 			}
-			err := notificationApplicationService.ViewNotification(context.Background(), tCase.input.userID, tCase.input.userNotificationID)
+			err := notificationApplicationService.ViewNotification(context.Background(), tCase.args.userID, tCase.args.userNotificationID)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
 
-			notification, err := notificationRepository.GetByUserIDAndUserNotificationID(context.Background(), tCase.input.userID, tCase.input.userNotificationID)
+			notification, err := notificationRepository.GetByUserIDAndUserNotificationID(context.Background(), tCase.args.userID, tCase.args.userNotificationID)
 			require.NoError(t, err)
 			require.Equal(t, notification.IsZero(), false)
 			require.Equal(t, notification.UpdatedAt().IsZero(), false)
 			require.Equal(t, notification.ViewedAt().IsZero(), false)
-
-			if tCase.cleanup != nil {
-				tCase.cleanup()
-			}
 		})
 	}
 }
 
 func TestUserApplicationService_DeleteUserNotification(t *testing.T) {
+	t.Parallel()
 	testConf := NewTestConfigWithDockerizePG(t)
 	logger := zerolog.New(os.Stdout).Level(zerolog.Disabled)
 	pg := pgStorage.NewClient(logger, pgStorage.Config{DSN: testConf.PgSDN})
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
-	type Input struct {
+	type args struct {
 		userID             string
 		userNotificationID string
 	}
 
 	type caseType struct {
 		name             string
-		input            Input
+		args             args
 		expErr           error
 		generateTestData func()
-		cleanup          func()
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_notification_not_found",
-				input:  Input{userID: userID, userNotificationID: userNotificationID},
+				name:   "notification_not_found",
+				args:   args{userID: userID, userNotificationID: userNotificationID},
 				expErr: nil,
 			}
 		},
@@ -348,8 +331,8 @@ func TestUserApplicationService_DeleteUserNotification(t *testing.T) {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_delete_one_notification",
-				input:  Input{userID: userID, userNotificationID: userNotificationID},
+				name:   "delete_one_notification",
+				args:   args{userID: userID, userNotificationID: userNotificationID},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.InsertUserNotification(
@@ -363,32 +346,27 @@ func TestUserApplicationService_DeleteUserNotification(t *testing.T) {
 						notificationRepository.CreateUserNotification,
 					)
 				},
-				cleanup: func() {
-				},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			if tCase.generateTestData != nil {
 				tCase.generateTestData()
 			}
-			err := notificationApplicationService.DeleteUserNotification(context.Background(), tCase.input.userID, tCase.input.userNotificationID)
+			err := notificationApplicationService.DeleteUserNotification(context.Background(), tCase.args.userID, tCase.args.userNotificationID)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
 
-			notification, err := notificationRepository.GetByUserIDAndUserNotificationID(context.Background(), tCase.input.userID, tCase.input.userNotificationID)
+			notification, err := notificationRepository.GetByUserIDAndUserNotificationID(context.Background(), tCase.args.userID, tCase.args.userNotificationID)
 			require.NoError(t, err)
 			require.Equal(t, notification.IsZero(), true)
-
-			if tCase.cleanup != nil {
-				tCase.cleanup()
-			}
 		})
 	}
 }
@@ -400,25 +378,24 @@ func TestUserApplicationService_ViewAllNotifications(t *testing.T) {
 
 	notificationApplicationService, notificationRepository := NewTestApplicationService(testConf, pg, logger, t)
 
-	type Input struct {
+	type args struct {
 		userID string
 	}
 
 	type caseType struct {
 		name             string
-		input            Input
+		args             args
 		expErr           error
 		generateTestData func()
-		cleanup          func()
 	}
 
-	cases := []func() caseType{
+	testCases := []func() caseType{
 		func() caseType {
 			userID := fixtures.GenerateUUID()
 			userNotificationID := fixtures.GenerateUUID()
 			return caseType{
-				name:   "ok_view_all_notifications",
-				input:  Input{userID: userID},
+				name:   "view_all_notifications",
+				args:   args{userID: userID},
 				expErr: nil,
 				generateTestData: func() {
 					fixtures.InsertUserNotification(
@@ -433,26 +410,25 @@ func TestUserApplicationService_ViewAllNotifications(t *testing.T) {
 					)
 
 				},
-				cleanup: func() {
-				},
 			}
 		},
 	}
 
-	for _, tCase := range cases {
+	for _, tCase := range testCases {
 		tCase := tCase()
 		t.Run(tCase.name, func(t *testing.T) {
+			t.Parallel()
 			if tCase.generateTestData != nil {
 				tCase.generateTestData()
 			}
-			err := notificationApplicationService.ViewAllNotifications(context.Background(), tCase.input.userID)
+			err := notificationApplicationService.ViewAllNotifications(context.Background(), tCase.args.userID)
 			if tCase.expErr != nil {
 				require.ErrorContains(t, err, tCase.expErr.Error())
 				return
 			}
 			require.NoError(t, err)
 
-			notifications, err := notificationRepository.GetByUserID(context.Background(), tCase.input.userID)
+			notifications, err := notificationRepository.GetByUserID(context.Background(), tCase.args.userID)
 			require.NoError(t, err)
 
 			for _, notification := range notifications {
@@ -460,10 +436,6 @@ func TestUserApplicationService_ViewAllNotifications(t *testing.T) {
 				require.Equal(t, notification.ViewedAt().IsZero(), false)
 				require.Equal(t, notification.UpdatedAt().IsZero(), false)
 
-			}
-
-			if tCase.cleanup != nil {
-				tCase.cleanup()
 			}
 		})
 	}

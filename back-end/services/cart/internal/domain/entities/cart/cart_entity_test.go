@@ -20,29 +20,30 @@ func NewTestCart(t *testing.T, customerID string, products []cartEntity.CartProd
 }
 
 func TestCartEntity_NewCart(t *testing.T) {
-	type expRes struct {
+	t.Parallel()
+	type want struct {
 		CustomerID string
 		Products   []cartEntity.CartProduct
 	}
 	testCases := []struct {
 		name   string
-		in     cartEntity.CreateCartParams
-		expRes expRes
+		args   cartEntity.CreateCartParams
+		want   want
 		expErr error
 	}{
 		{
 			name: "error_invalid_customer_id",
-			in: cartEntity.CreateCartParams{
+			args: cartEntity.CreateCartParams{
 				CustomerID: "",
 			},
 			expErr: cartEntity.ErrInvalidCustomerID,
 		},
 		{
 			name: "empty_cart",
-			in: cartEntity.CreateCartParams{
+			args: cartEntity.CreateCartParams{
 				CustomerID: "123",
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "123",
 				Products:   nil,
 			},
@@ -50,7 +51,7 @@ func TestCartEntity_NewCart(t *testing.T) {
 		},
 		{
 			name: "cart_with_products",
-			in: cartEntity.CreateCartParams{
+			args: cartEntity.CreateCartParams{
 				CustomerID: "123",
 				Products: []cartEntity.CartProduct{
 					{
@@ -59,7 +60,7 @@ func TestCartEntity_NewCart(t *testing.T) {
 					},
 				},
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "123",
 				Products: []cartEntity.CartProduct{
 					{
@@ -73,37 +74,40 @@ func TestCartEntity_NewCart(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			cart, err := cartEntity.NewCart(tc.in)
+			t.Parallel()
+			cart, err := cartEntity.NewCart(tc.args)
 
 			require.Equal(t, tc.expErr, err)
-			assert.Equal(t, tc.expRes.CustomerID, cart.CustomerID())
-			assert.DeepEqual(t, tc.expRes.Products, cart.Products())
+			assert.Equal(t, tc.want.CustomerID, cart.CustomerID())
+			assert.DeepEqual(t, tc.want.Products, cart.Products())
 		})
 	}
 }
 
 func TestCartEntity_UpdateProductsInCart(t *testing.T) {
-	type expRes struct {
+	t.Parallel()
+	type want struct {
 		CustomerID string
 		Products   []cartEntity.CartProduct
 		Events     []cartEntity.Event
 	}
 	testCases := []struct {
 		name   string
-		in     cartEntity.CartProduct
+		args   cartEntity.CartProduct
 		cart   cartEntity.Cart
-		expRes expRes
+		want   want
 		expErr error
 	}{
 		{
 			name: "add_product_to_empty_cart",
 			cart: NewTestCart(t, "123", nil),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "123",
 				Quantity:  2,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "123",
 				Products: []cartEntity.CartProduct{
 					{
@@ -129,11 +133,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 					Quantity:  5,
 				},
 			}),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "product_id_two",
 				Quantity:  2,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "customer_id",
 				Products: []cartEntity.CartProduct{
 					{
@@ -162,11 +166,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 					Quantity:  5,
 				},
 			}),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "product_id_one",
 				Quantity:  2,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "customer_id",
 				Products: []cartEntity.CartProduct{
 					{
@@ -191,11 +195,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 					Quantity:  5,
 				},
 			}),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "product_id_one",
 				Quantity:  0,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "customer_id",
 				Products:   []cartEntity.CartProduct{},
 				Events: []cartEntity.Event{
@@ -209,11 +213,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 		{
 			name: "delete_product_from_empty_cart",
 			cart: NewTestCart(t, "123", nil),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "123",
 				Quantity:  0,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "123",
 				Products:   nil,
 			},
@@ -227,11 +231,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 					Quantity:  5,
 				},
 			}),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "product_id_two",
 				Quantity:  0,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "customer_id",
 				Products: []cartEntity.CartProduct{
 					{
@@ -250,11 +254,11 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 					Quantity:  5,
 				},
 			}),
-			in: cartEntity.CartProduct{
+			args: cartEntity.CartProduct{
 				ProductID: "product_id_one",
 				Quantity:  0,
 			},
-			expRes: expRes{
+			want: want{
 				CustomerID: "customer_id",
 				Products:   []cartEntity.CartProduct{},
 				Events: []cartEntity.Event{
@@ -268,13 +272,15 @@ func TestCartEntity_UpdateProductsInCart(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			cart, err := tc.cart.UpdateProductsInCart(tc.in)
+			t.Parallel()
+			cart, err := tc.cart.UpdateProductsInCart(tc.args)
 
 			require.Equal(t, tc.expErr, err)
-			assert.Equal(t, tc.expRes.CustomerID, cart.CustomerID())
-			assert.DeepEqual(t, tc.expRes.Products, cart.Products())
-			assert.DeepEqual(t, tc.expRes.Events, cart.Events())
+			assert.Equal(t, tc.want.CustomerID, cart.CustomerID())
+			assert.DeepEqual(t, tc.want.Products, cart.Products())
+			assert.DeepEqual(t, tc.want.Events, cart.Events())
 		})
 	}
 }

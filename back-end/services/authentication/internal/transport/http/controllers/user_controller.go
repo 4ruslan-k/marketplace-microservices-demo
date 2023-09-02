@@ -11,9 +11,7 @@ import (
 	"net/url"
 
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/mongo/mongodriver"
 	"github.com/rs/zerolog"
-	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth"
@@ -22,6 +20,7 @@ import (
 	"github.com/markbates/goth/providers/google"
 
 	domainDto "authentication/internal/services/dto"
+	"authentication/internal/transport/http/dto"
 	httpDto "authentication/internal/transport/http/dto"
 	httpErrors "shared/errors/http"
 )
@@ -30,26 +29,25 @@ type UserControllers struct {
 	ApplicationService applicationServices.UserApplicationService
 	Logger             zerolog.Logger
 	Config             *config.Config
-}
-
-type UserOutput struct {
-	User *domainDto.UserOutput `json:"user"`
+	SessionManager     SessionManager
 }
 
 func NewUserControllers(
 	appService applicationServices.UserApplicationService,
 	logger zerolog.Logger,
 	config *config.Config,
+	sessionManager SessionManager,
 ) *UserControllers {
 	return &UserControllers{
 		ApplicationService: appService,
 		Logger:             logger,
 		Config:             config,
+		SessionManager:     sessionManager,
 	}
 }
 
 func SetupSocialLogin(
-	mb *mongo.Database,
+	sessionsStore sessions.Store,
 	config *config.Config,
 ) {
 
@@ -58,10 +56,7 @@ func SetupSocialLogin(
 		google.New(config.SocialSignIn.GoogleKey, config.SocialSignIn.GoogleSecret, config.GatewayURL+"/v1/auth/social/google/callback"),
 	)
 
-	sessionsCollection := mb.Collection("sessions")
-	store := mongodriver.NewStore(sessionsCollection, 3600, true, []byte(config.SessionSecret))
-
-	gothic.Store = store
+	gothic.Store = sessionsStore
 
 	authMap := make(map[string]string)
 	authMap["github"] = "Github"
@@ -148,23 +143,23 @@ func (r *UserControllers) SocialLogin(c *gin.Context) {
 	handleOkResponse(c)
 }
 
-func getUserIDFromSession(session sessions.Session) *string {
+func getUserIDFromSession(session sessions.Session) string {
 	sessionUserID := session.Get("user_id")
 	if sessionUserID == nil {
-		return nil
+		return ""
 	}
 	userID := sessionUserID.(string)
-	return &userID
+	return userID
 }
 
 func (r *UserControllers) GetCurrentUser(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := getUserIDFromSession(session)
-	if userID == nil {
+	if userID == "" {
 		handleResponseWithBody(c, httpDto.UserOutput{User: nil})
 		return
 	}
-	userOutput, err := r.ApplicationService.GetUserByID(c.Request.Context(), *userID)
+	userOutput, err := r.ApplicationService.GetUserByID(c.Request.Context(), userID)
 	if userOutput == nil {
 		httpErrors.Unauthorized(c, "Not Authorized, no user found")
 		return
@@ -182,11 +177,11 @@ func (r *UserControllers) GetCurrentUserInternal(c *gin.Context) {
 	userID := getUserIDFromSession(session)
 	sessionID := session.ID()
 
-	if userID == nil {
+	if userID == "" {
 		handleResponseWithBody(c, httpDto.UserWithSessionIDOutput{User: nil, SessionID: sessionID})
 		return
 	}
-	userOutput, err := r.ApplicationService.GetUserByID(c.Request.Context(), *userID)
+	userOutput, err := r.ApplicationService.GetUserByID(c.Request.Context(), userID)
 	if err != nil {
 		httpErrors.RespondWithError(c, err)
 		return
@@ -205,8 +200,8 @@ func (r *UserControllers) GetUserByID(c *gin.Context) {
 		httpErrors.RespondWithError(c, errors.New("user_id parameter not found"))
 		return
 	}
-	session := sessions.Default(c)
-	sessionUserID := session.Get("user_id").(string)
+	sessionUserID := r.SessionManager.GetUserID(c)
+
 	if userIDfromParams != sessionUserID {
 		httpErrors.Unauthorized(c, "You are not authorized to fetch this user")
 		return
@@ -308,14 +303,9 @@ func saveSession(session sessions.Session, userID string) error {
 	return nil
 }
 
-type LoginInput struct {
-	Email    string `json:"username"  binding:"required"`
-	Password string `json:"password"  binding:"required"`
-}
-
 // Logins with email and password
 func (h *UserControllers) LoginWithEmailAndPassword(c *gin.Context) {
-	var loginInput LoginInput
+	var loginInput dto.LoginInput
 	if err := c.ShouldBindJSON(&loginInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return
@@ -343,14 +333,9 @@ func (h *UserControllers) LoginWithEmailAndPassword(c *gin.Context) {
 	handleResponseWithBody(c, httpDto.LoginOutput{LoginOutput: loginOutput})
 }
 
-type LoginWithTotpInput struct {
-	PasswordVerificationTokenID string `json:"tokenId"  binding:"required"`
-	Code                        string `json:"code"  binding:"required"`
-}
-
 // Logins with TOTP code, requires a password verification token
 func (h *UserControllers) LoginWithTotpCode(c *gin.Context) {
-	var loginInput LoginWithTotpInput
+	var loginInput dto.LoginWithTotpInput
 	if err := c.ShouldBindJSON(&loginInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return
@@ -387,15 +372,8 @@ func (h *UserControllers) Logout(c *gin.Context) {
 	handleOkResponse(c)
 }
 
-// Change Password
-type ChangePasswordInput struct {
-	CurrentPassword         string `json:"currentPassword"  binding:"required"`
-	NewPassword             string `json:"newPassword"  binding:"required"`
-	NewPasswordConfirmation string `json:"newPasswordConfirmation"  binding:"required"`
-}
-
 func (h *UserControllers) ChangeCurrentPassword(c *gin.Context) {
-	var changePasswordInput ChangePasswordInput
+	var changePasswordInput dto.ChangePasswordInput
 	if err := c.ShouldBindJSON(&changePasswordInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return
@@ -440,13 +418,9 @@ func (h *UserControllers) GenerateTotpSetup(c *gin.Context) {
 	}})
 }
 
-type EnableTotpMfaInput struct {
-	Otp string `json:"code" binding:"required"`
-}
-
 // Enables TOTP MFA by validating the OTP code
 func (h *UserControllers) EnableTotpMfa(c *gin.Context) {
-	var enableTotpMfaInput EnableTotpMfaInput
+	var enableTotpMfaInput dto.EnableTotpMfaInput
 	if err := c.ShouldBindJSON(&enableTotpMfaInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return
@@ -469,7 +443,7 @@ func (h *UserControllers) EnableTotpMfa(c *gin.Context) {
 
 // Disables TOTP MFA by validating the OTP code
 func (h *UserControllers) DisableTotpMfa(c *gin.Context) {
-	var enableTotpMfaInput EnableTotpMfaInput
+	var enableTotpMfaInput dto.EnableTotpMfaInput
 	if err := c.ShouldBindJSON(&enableTotpMfaInput); err != nil {
 		httpErrors.BadRequest(c, err.Error())
 		return

@@ -55,7 +55,7 @@ func httpRespondWithError(
 	status int,
 ) {
 	resp := ErrorResponse{Message: message, Success: false, httpStatus: status}
-	c.JSON(resp.httpStatus, resp)
+	c.AbortWithStatusJSON(resp.httpStatus, resp)
 }
 
 type ErrorResponse struct {

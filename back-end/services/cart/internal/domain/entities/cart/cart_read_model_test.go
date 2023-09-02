@@ -8,24 +8,25 @@ import (
 )
 
 func TestCartReadModel_NewCartReadModel(t *testing.T) {
-
-	type in struct {
+	t.Parallel()
+	type args struct {
 		CustomerID string
 		Products   []cartEntity.CartReadModelProduct
 	}
 
 	testCases := []struct {
-		name   string
-		in     in
-		expRes cartEntity.CartReadModel
+		name string
+		args args
+		want cartEntity.CartReadModel
 	}{
 		{
 			name: "empty_cart",
-			in: in{
+			args: args{
 				CustomerID: "1",
 				Products:   nil,
 			},
-			expRes: cartEntity.CartReadModel{
+			want: cartEntity.CartReadModel{
+				Type:       "cart",
 				CustomerID: "1",
 				Products:   nil,
 				TotalPrice: 0,
@@ -33,7 +34,7 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 		},
 		{
 			name: "one_product",
-			in: in{
+			args: args{
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -45,7 +46,8 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 				},
 			},
 
-			expRes: cartEntity.CartReadModel{
+			want: cartEntity.CartReadModel{
+				Type:       "cart",
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -60,7 +62,7 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 		},
 		{
 			name: "two_products",
-			in: in{
+			args: args{
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -78,7 +80,8 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 				},
 			},
 
-			expRes: cartEntity.CartReadModel{
+			want: cartEntity.CartReadModel{
+				Type:       "cart",
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -99,7 +102,7 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 		},
 		{
 			name: "two_products#2",
-			in: in{
+			args: args{
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -117,7 +120,8 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 				},
 			},
 
-			expRes: cartEntity.CartReadModel{
+			want: cartEntity.CartReadModel{
+				Type:       "cart",
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -138,7 +142,7 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 		},
 		{
 			name: "one_product",
-			in: in{
+			args: args{
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -156,7 +160,8 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 				},
 			},
 
-			expRes: cartEntity.CartReadModel{
+			want: cartEntity.CartReadModel{
+				Type:       "cart",
 				CustomerID: "1",
 				Products: []cartEntity.CartReadModelProduct{
 					{
@@ -178,9 +183,11 @@ func TestCartReadModel_NewCartReadModel(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			cart := cartEntity.NewCartReadModel(tc.in.CustomerID, tc.in.Products)
-			assert.DeepEqual(t, tc.expRes, cart)
+			t.Parallel()
+			cart := cartEntity.NewCartReadModel(tc.args.CustomerID, tc.args.Products)
+			assert.DeepEqual(t, tc.want, cart)
 		})
 	}
 }

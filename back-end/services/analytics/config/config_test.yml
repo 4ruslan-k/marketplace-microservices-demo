@@ -1,5 +1,0 @@
-app:
-  name: 'analytics'
-  version: '0.0.1'
-http:
-  port: '4003'
