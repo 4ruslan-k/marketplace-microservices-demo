@@ -93,6 +93,19 @@ services:
     depends_on:
       - nats
       - postgres
+  chat:
+    env_file:
+    - ./back-end/services/chat/.env.docker
+    build:
+      context: ./back-end/services/chat
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./back-end/services/chat/src:/src/app/src:rw,delegated
+    ports:
+      - 4008:3000
+    depends_on:
+      - nats
+      - postgres
   nats:
     image: nats:latest
     entrypoint: ["/nats-server", "-js"]

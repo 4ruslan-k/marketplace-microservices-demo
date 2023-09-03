@@ -1,0 +1,15 @@
+FROM node:18-alpine As build
+
+WORKDIR /src/app
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+RUN echo $(ls)
+
+CMD [ "npm", "run", "start:dev" ]
