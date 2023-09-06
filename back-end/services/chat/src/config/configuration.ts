@@ -2,6 +2,7 @@ import * as Joi from 'joi';
 
 const configSchema = Joi.object({
   port: Joi.number().required(),
+  natsUri: Joi.string().required(),
   database: {
     host: Joi.string().required(),
     port: Joi.number().required(),
@@ -21,6 +22,7 @@ export default () => {
       password: process.env.DATABASE_PASSWORD,
       name: process.env.DATABASE_NAME,
     },
+    natsUri: process.env.NATS_URI,
   };
 
   const validate = () => {
