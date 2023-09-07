@@ -9,6 +9,7 @@ const configSchema = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
     name: Joi.string().required(),
+    debugMode: Joi.boolean().default(false),
   },
 });
 
@@ -21,6 +22,7 @@ export default () => {
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       name: process.env.DATABASE_NAME,
+      debugMode: process.env.DATABASE_DEBUG_MODE === 'true' || false,
     },
     natsUri: process.env.NATS_URI,
   };
