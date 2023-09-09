@@ -13,6 +13,16 @@ services:
       - 2347:2345
     depends_on:
       - redis
+  frontend:
+    env_file:
+      - ./front-end/marketplace/.env.docker
+    build:
+      context: ./front-end/marketplace
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./front-end/marketplace/:/src/app
+    ports:
+      - 3500:3000
   catalog:
     env_file:
       - ./back-end/services/catalog/.env.docker
