@@ -9,6 +9,8 @@ import {
 
 import { Socket, Server } from 'socket.io';
 
+const messages = [];
+
 @WebSocketGateway(80, {
   path: '/chat/socket.io',
   cors: {
@@ -34,6 +36,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return this.disconnect(socket);
       } else {
         socket.data.user = user;
+        socket.emit('allMessages', messages);
         return this.server.to(socket.id);
       }
     } catch {
@@ -57,6 +60,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('addMessage')
   async onAddMessage(socket: Socket, message: any) {
     this.logger.log(`addMessage -> Client: ${socket.id} Message: ${message}`);
-    socket.emit('newMessage', `Client ${socket.id} sent message: ${message}`);
+    const outputMessage = `Client ${socket.id} sent message: ${message}`;
+    this.server.emit(
+      'newMessage',
+      `Client ${socket.id} sent message: ${message}`,
+    );
+    messages.push(outputMessage);
   }
 }
