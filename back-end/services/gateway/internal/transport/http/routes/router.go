@@ -42,9 +42,15 @@ func NewRouter(
 	cartServiceURL := config.CartServiceURL
 	cartServiceProxy := controllers.ReverseProxy(cartServiceURL)
 
+	chatServiceSocketIOURL := config.ChatsServiceWebsocketURL
+	chatServiceProxy := controllers.ReverseProxy(chatServiceSocketIOURL)
+
 	// declare before CORS
 	handler.GET("/socket.io/*any", authenticate, notifProxy)
 	handler.POST("/socket.io/*any", authenticate, notifProxy)
+
+	handler.GET("/chat/socket.io/*any", chatServiceProxy)
+	handler.POST("/chat/socket.io/*any", chatServiceProxy)
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{config.FontendURL, config.SwaggerEditorDomain, config.SwaggerUIDomain}

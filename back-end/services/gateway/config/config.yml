@@ -4,6 +4,7 @@ app:
 frontend_url: ${FRONTEND_URL}
 catalog_service_url: ${CATALOG_SERVICE_URL}
 cart_service_url: ${CART_SERVICE_URL}
+chat_service_websocket_url: ${CHAT_SERVICE_SOCKET_IO_URL}
 redis_address: ${REDIS_ADDRESS}
 authentication_service_url: ${AUTHENTICATION_SERVICE_URL}
 notification_service_url: ${NOTIFICATION_SERVICE_URL}

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { LoggerMiddleware } from './logHttpRequest.middleware';
 import { UserModule } from './user/user.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserModule } from './user/user.module';
       isGlobal: true,
     }),
     UserModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],

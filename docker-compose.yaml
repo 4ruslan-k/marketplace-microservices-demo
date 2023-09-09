@@ -103,6 +103,7 @@ services:
       - ./back-end/services/chat/src:/src/app/src:rw,delegated
     ports:
       - 4008:3000
+      - 4009:80
     depends_on:
       - nats
       - postgres
