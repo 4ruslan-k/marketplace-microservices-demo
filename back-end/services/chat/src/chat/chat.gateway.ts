@@ -13,8 +13,10 @@ const messages = [];
 
 @WebSocketGateway(80, {
   path: '/chat/socket.io',
+  credentials: true,
   cors: {
     origin: ['http://localhost:3500'],
+    credentials: true,
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -27,16 +29,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(socket: Socket) {
     try {
       this.logger.log(`handleConnection -> Client connected: ${socket.id}`);
-      console.log(socket.handshake.headers);
+      const authHeader = socket.handshake.headers['x-authentication-info'];
+      const authInfo = JSON.parse(String(authHeader));
 
-      const user = {
-        id: 1,
-        name: 'test',
-      };
-      if (!user) {
+      if (!authHeader || !authInfo) {
         return this.disconnect(socket);
       } else {
-        socket.data.user = user;
+        socket.data.authInfo = authInfo;
         socket.emit('allMessages', messages);
         return this.server.to(socket.id);
       }

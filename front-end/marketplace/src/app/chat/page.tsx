@@ -13,7 +13,8 @@ export default function Home() {
     useEffect(() => {
         if (!socket) {
           const updatedSocket = io('ws://localhost:4001', {
-            path: '/chat/socket.io'
+            path: '/chat/socket.io',
+            withCredentials: true,
           });
           setSocket(updatedSocket);
     
