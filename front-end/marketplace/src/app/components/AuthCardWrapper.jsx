@@ -21,7 +21,7 @@ const githubIconStyles = {
 
 function AuthCardWrapper({ children, handleSubmit, isValid, title, submitButtonLabel, isLoading }) {
   return (
-    <div className="w-full h-full flex justify-center items-center mt-32">
+    <div className="w-full min-h-screen flex justify-center items-center mt-32">
       <Card className="w-400 p-32 flex flex-col justify-center">
         <h1 className="mb-32">{title}</h1>
         <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center">

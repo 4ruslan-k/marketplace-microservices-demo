@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* makes sure changing browser's font-size won't break layout */
+html {
+  font-size: 62.5%;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
