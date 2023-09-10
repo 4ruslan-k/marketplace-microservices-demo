@@ -11,13 +11,15 @@ export class ChatService {
   ) {}
 
   async sendMessage(message: CreateMessageDto) {
-    await this.messageRepository.insert({
+    const messageInput = {
       id: message.id,
       text: message.text,
       userId: message.userId,
       createdAt: new Date(),
       updatedAt: null,
-    });
+    };
+    await this.messageRepository.insert(messageInput);
+    return messageInput;
   }
 
   async getMessages(): Promise<Message[]> {

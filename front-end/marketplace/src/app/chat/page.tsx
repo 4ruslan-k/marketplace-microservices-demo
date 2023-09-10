@@ -2,6 +2,7 @@
 
 import { useState, useEffect,useRef} from 'react';
 import io from 'socket.io-client';
+import { useFetchMessages } from '../requests/chatHooks';
 
 
 const initialMessages: Array<string> = [];
@@ -10,6 +11,13 @@ const initialMessages: Array<string> = [];
 export default function Home() {
     const [socket, setSocket] = useState<any>(null);
     const [messages, setMessages] = useState<string[]>(initialMessages);
+    const { refetchMessages,messages: fetchedMessages } = useFetchMessages();
+
+    useEffect(() => {
+      setMessages(fetchedMessages)
+    }, [fetchedMessages])
+    
+
     useEffect(() => {
         if (!socket) {
           const updatedSocket = io('ws://localhost:4001', {
@@ -20,6 +28,7 @@ export default function Home() {
     
           updatedSocket.on('connect', () => {
             console.log('Connected to Socket.IO server!');
+            refetchMessages()
           });
 
 
@@ -30,11 +39,6 @@ export default function Home() {
           updatedSocket.on('newMessage', (message) => {
             console.log("newMessage -> message", message)
             setMessages((prevMessages) => [...prevMessages, message]);
-          });
-
-          updatedSocket.on('allMessages', (messages) => {
-            console.log("allMessages", messages)
-            setMessages(messages);
           });
         }
     
@@ -102,7 +106,7 @@ export default function Home() {
     </div>
       </div>
       </div>
-      {messages.map((message) => (<div>{message}</div>))}
+      {messages?.map((message) => (<div key={message.id}>{message.text}</div>))}
     </main>
   )
 }
