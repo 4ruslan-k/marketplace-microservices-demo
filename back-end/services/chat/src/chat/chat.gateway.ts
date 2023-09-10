@@ -27,6 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(socket: Socket) {
     try {
       this.logger.log(`handleConnection -> Client connected: ${socket.id}`);
+      console.log(socket.handshake.headers);
 
       const user = {
         id: 1,

@@ -46,11 +46,13 @@ func NewRouter(
 	chatServiceProxy := controllers.ReverseProxy(chatServiceSocketIOURL)
 
 	// declare before CORS
+	// notification service websocket
 	handler.GET("/socket.io/*any", authenticate, notifProxy)
 	handler.POST("/socket.io/*any", authenticate, notifProxy)
 
-	handler.GET("/chat/socket.io/*any", chatServiceProxy)
-	handler.POST("/chat/socket.io/*any", chatServiceProxy)
+	// chat service websocket
+	handler.GET("/chat/socket.io/*any", authenticate, chatServiceProxy)
+	handler.POST("/chat/socket.io/*any", authenticate, chatServiceProxy)
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{config.FontendURL, config.SwaggerEditorDomain, config.SwaggerUIDomain}

@@ -12,7 +12,7 @@ export default function Home() {
     const [messages, setMessages] = useState<string[]>(initialMessages);
     useEffect(() => {
         if (!socket) {
-          const updatedSocket = io('ws://localhost:4009', {
+          const updatedSocket = io('ws://localhost:4001', {
             path: '/chat/socket.io'
           });
           setSocket(updatedSocket);
