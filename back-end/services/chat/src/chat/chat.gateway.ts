@@ -6,10 +6,19 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Socket, Server } from 'socket.io';
+import { ChatService } from './chat.service';
 
 const messages = [];
+
+class AuthInfo {
+  user_id: string;
+  ip: string;
+  user_agent: string;
+  session_id: string;
+}
 
 @WebSocketGateway(80, {
   path: '/chat/socket.io',
@@ -22,9 +31,10 @@ const messages = [];
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+
   private logger = new Logger('WebSocketServer');
 
-  constructor() {}
+  constructor(private readonly chatService: ChatService) {}
 
   async handleConnection(socket: Socket) {
     try {
@@ -61,10 +71,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onAddMessage(socket: Socket, message: any) {
     this.logger.log(`addMessage -> Client: ${socket.id} Message: ${message}`);
     const outputMessage = `Client ${socket.id} sent message: ${message}`;
+    const authInfo: AuthInfo = socket.data.authInfo;
+    await this.chatService.sendMessage({
+      id: uuidv4(),
+      text: message,
+      userId: authInfo.user_id,
+    });
     this.server.emit(
       'newMessage',
       `Client ${socket.id} sent message: ${message}`,
     );
+
     messages.push(outputMessage);
   }
 }

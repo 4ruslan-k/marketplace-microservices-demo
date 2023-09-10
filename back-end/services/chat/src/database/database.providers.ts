@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Message } from 'src/chat/message.entity';
 import { User } from 'src/user/user.entity';
 import { DATA_SOURCE } from 'src/user/user.providers';
 import { DataSource } from 'typeorm';
@@ -17,7 +18,7 @@ export const databaseProviders = [
         password: configService.get('database.password'),
         database: configService.get('database.name'),
         logging: configService.get('database.debugMode'),
-        entities: [User],
+        entities: [User, Message],
         synchronize: false,
       });
 
