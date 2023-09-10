@@ -3,6 +3,8 @@
 import { useState, useEffect,useRef} from 'react';
 import io from 'socket.io-client';
 import { useFetchMessages } from '../requests/chatHooks';
+import IconButton from '@mui/material/IconButton';
+import Send from '@mui/icons-material/Send';
 
 
 const initialMessages: Array<string> = [];
@@ -72,41 +74,25 @@ export default function Home() {
 
   return (
     <main  className="min-h-screen">
-      <div className="flex flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+      <div className="items-center justify-between p-24">
+      <div className="w-full items-center justify-between text-sm">
         <div className="flex w-full items-center">
-      <form className="flex appearance-none rounded-md bg-gray-800 outline-none focus:outline-none">
+      <form className="flex appearance-none rounded-md bg-gray-800 outline-none focus:outline-none mb-24">
         <textarea
           ref={textAreaRef}
           onKeyDown={(e) => handleKeyDown(e)}
           id="minput"
           placeholder="Message"
-          className="mb-2 max-h-16 flex-grow appearance-nonse rounded-md border-none bg-gray-800 text-white placeholder-slate-400 focus:outline-none focus:ring-transparent"
+          className="mb-2 h-64 w-320 flex-grow appearance-nonse rounded-md border-none bg-gray-800 text-white placeholder-slate-400 focus:outline-none focus:ring-transparent"
         ></textarea>
-        <button
-          onClick={(e) => submit(e)}
-          className="self-end p-2 text-slate-400"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4 bg-gray-800"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-            />
-          </svg>
-        </button>
+        <IconButton onClick={(e) => submit(e)} variant="plain">
+          <Send color='primary' />
+        </IconButton>
       </form>
     </div>
       </div>
-      </div>
       {messages?.map((message) => (<div key={message.id}>{message.text}</div>))}
+      </div>
     </main>
   )
 }

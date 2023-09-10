@@ -59,6 +59,7 @@ function Header() {
   const menuId = 'menu';
   const tabs = [
     { path: '/', label: 'Home' },
+    { path: '/chat', label: 'Chat' },
   ];
   const router = useRouter();
   const [tabIndex, setTabIndex] = React.useState(false);
