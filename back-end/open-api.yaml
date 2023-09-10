@@ -362,6 +362,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseSuccess'
+  /chat/messages:
+    get:
+      tags:
+        - chat
+      summary: Get messages
+      description: ''
+      operationId: getMessages
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageList'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'    
   /users/me/notifications:
     get:
       tags:
@@ -547,6 +567,28 @@ components:
           totalPrice:
             type: number
             example: 5.1
+    MessageList:
+        type: object
+        properties:
+          type:
+            type: string
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/Message'
+    Message:
+        type: object
+        properties:
+          id:
+            type: string
+          text:
+            type: string
+          type:
+            type: string
+          createdAt:
+            type: string
+            format: date-time
+            example: 2023-04-15T05:44:37.596Z
     CartProduct:
       type: object
       properties:

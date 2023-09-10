@@ -19,6 +19,10 @@ export class ChatService {
       updatedAt: null,
     });
   }
+
+  async getMessages(): Promise<Message[]> {
+    return this.messageRepository.find();
+  }
 }
 
 export class CreateMessageDto {

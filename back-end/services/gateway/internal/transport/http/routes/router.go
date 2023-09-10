@@ -42,8 +42,11 @@ func NewRouter(
 	cartServiceURL := config.CartServiceURL
 	cartServiceProxy := controllers.ReverseProxy(cartServiceURL)
 
-	chatServiceSocketIOURL := config.ChatsServiceWebsocketURL
-	chatServiceProxy := controllers.ReverseProxy(chatServiceSocketIOURL)
+	chatServiceWebsocketURL := config.ChatsServiceWebsocketURL
+	chatServiceWebsocketProxy := controllers.ReverseProxy(chatServiceWebsocketURL)
+
+	chatServiceURL := config.ChatsServiceURL
+	chatServiceProxy := controllers.ReverseProxy(chatServiceURL)
 
 	// declare before CORS
 	// notification service websocket
@@ -51,8 +54,8 @@ func NewRouter(
 	handler.POST("/socket.io/*any", authenticate, notifProxy)
 
 	// chat service websocket
-	handler.GET("/chat/socket.io/*any", authenticate, chatServiceProxy)
-	handler.POST("/chat/socket.io/*any", authenticate, chatServiceProxy)
+	handler.GET("/chat/socket.io/*any", authenticate, chatServiceWebsocketProxy)
+	handler.POST("/chat/socket.io/*any", authenticate, chatServiceWebsocketProxy)
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{config.FontendURL, config.SwaggerEditorDomain, config.SwaggerUIDomain}
@@ -69,6 +72,9 @@ func NewRouter(
 	v1.PATCH("/users/:userID", authenticate, authServiceProxy)
 	v1.DELETE("/users/:userID", authenticate, authServiceProxy)
 	v1.GET("/users/me", authServiceProxy)
+
+	// chat
+	v1.GET("/chat/messages", authenticate, chatServiceProxy)
 
 	// auth
 	v1.POST("/auth/login", rateLimit(10), authServiceProxy)
