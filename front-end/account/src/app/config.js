@@ -1,0 +1,13 @@
+const config = {
+  local: {
+    API_URL: 'http://localhost:4001',
+  },
+  development: {
+    API_URL: 'http://localhost:3600',
+  },
+  production: {
+    API_URL: process.env.REACT_APP_API_URL,
+  },
+};
+
+export default config;
