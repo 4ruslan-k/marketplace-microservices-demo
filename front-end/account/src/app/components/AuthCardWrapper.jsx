@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
@@ -5,8 +6,10 @@ import { bool, func, node, string } from 'prop-types';
 import GitHub from '@mui/icons-material/GitHub';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Image from 'next/image';
-import { API_URL } from '../constants/configVariables';
+import config from '../config'
 import googleIcon from '../assets/images/googleIcon.svg';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const githubIconStyles = {
   display: 'flex',
@@ -20,6 +23,8 @@ const githubIconStyles = {
 };
 
 function AuthCardWrapper({ children, handleSubmit, isValid, title, submitButtonLabel, isLoading }) {
+  const pathname  = usePathname()
+
   return (
     <div className="w-full min-h-screen flex justify-center items-center mt-32">
       <Card className="w-400 p-32 flex flex-col justify-center">
@@ -48,7 +53,7 @@ function AuthCardWrapper({ children, handleSubmit, isValid, title, submitButtonL
                       },
                     }}
                     className="w-full flex justify-between"
-                    href={`${API_URL}/v1/auth/social/google`}
+                    href={`${config.API_URL}/v1/auth/social/google`}
                     startIcon={
                       <Image alt="google icon" style={{ height: 20, width: 20, marginRight: 'auto' }} src={googleIcon} />
                     }
@@ -62,11 +67,31 @@ function AuthCardWrapper({ children, handleSubmit, isValid, title, submitButtonL
                     startIcon={<GitHub />}
                     sx={githubIconStyles}
                     className="w-full"
-                    href={`${API_URL}/v1/auth/social/github`}
+                    href={`${config.API_URL}/v1/auth/social/github`}
                     variant="contained"
                   >
                     Login with Github
                   </Button>
+                </div>
+                <div className="mb-4">
+                {pathname === '/signin' ? (
+                  <Link href="/signup" className="no-underline">
+                    <Button
+                      className="w-full"
+                      variant="outlined"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                ):<Link href="/signin" className="no-underline">
+                <Button
+                  className="w-full"
+                  variant="outlined"
+                >
+                  Sign In
+                </Button>
+              </Link>}
+        
                 </div>
               </div>
             </div>

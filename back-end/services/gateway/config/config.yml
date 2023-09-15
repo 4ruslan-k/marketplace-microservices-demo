@@ -1,7 +1,8 @@
 app:
   name: gateway
   version: '0.0.1'
-frontend_url: ${FRONTEND_URL}
+marketplace_app_url: ${MARKETPLACE_APP_URL}
+accounts_app_url: ${ACCOUNTS_APP_URL}
 catalog_service_url: ${CATALOG_SERVICE_URL}
 cart_service_url: ${CART_SERVICE_URL}
 chat_service_websocket_url: ${CHAT_SERVICE_WEBSOCKET_URL}

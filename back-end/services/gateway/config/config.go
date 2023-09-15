@@ -14,7 +14,8 @@ type (
 	Config struct {
 		App                      `yaml:"app"`
 		HTTP                     `yaml:"http"`
-		FontendURL               string `yaml:"frontend_url"  validate:"required"`
+		AccountsAppURL           string `yaml:"accounts_app_url"  validate:"required"`
+		MarketplaceAppUrl        string `yaml:"marketplace_app_url"  validate:"required"`
 		CatalogServiceURL        string `yaml:"catalog_service_url" validate:"required"`
 		CartServiceURL           string `yaml:"cart_service_url" validate:"required"`
 		ChatsServiceWebsocketURL string `yaml:"chat_service_websocket_url" validate:"required"`

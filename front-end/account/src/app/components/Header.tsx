@@ -37,7 +37,6 @@ function Header() {
   const [anchorElNotifications, setAnchorElNotifications] = React.useState<null | HTMLElement>(null);
 
   useEffect(() => {
-    console.log("🚀 ~ file: Header.tsx:41 ~ useEffect ~ setUserStatus:", setUserStatus)
     if (setUserStatus) setUserStatus(Boolean(user));
   }, [user, setUserStatus]);
 

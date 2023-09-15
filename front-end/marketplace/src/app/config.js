@@ -1,13 +1,6 @@
 const config = {
-  local: {
-    API_URL: 'http://localhost:4001',
-  },
-  development: {
-    API_URL: 'http://localhost:3600',
-  },
-  production: {
-    API_URL: process.env.REACT_APP_API_URL,
-  },
+  API_URL: process.env.NEXT_PUBLIC_API_URL,
+  ACCOUNTS_APP_URL: process.env.NEXT_PUBLIC_ACCOUNTS_APP_URL,
 };
 
 export default config;

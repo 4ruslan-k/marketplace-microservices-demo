@@ -27,6 +27,7 @@ import { SnackbarContext, SnackbarProviderContextType } from '../context/Snackba
 import { SocketContext } from '../context/SocketContext';
 import { useFetchUser, useLogoutUser } from '../requests/userHooks';
 import { useDeleteNotification, useFetchNotifications, useWatchNotification } from '../requests/notificationHooks';
+import config from '../config';
 
 function Header() {
   const { openSuccessSnackbar, openErrorSnackbar }: Partial<SnackbarProviderContextType> = useContext(SnackbarContext);
@@ -37,7 +38,6 @@ function Header() {
   const [anchorElNotifications, setAnchorElNotifications] = React.useState<null | HTMLElement>(null);
 
   useEffect(() => {
-    console.log("🚀 ~ file: Header.tsx:41 ~ useEffect ~ setUserStatus:", setUserStatus)
     if (setUserStatus) setUserStatus(Boolean(user));
   }, [user, setUserStatus]);
 
@@ -230,34 +230,24 @@ function Header() {
             <div className="mr-8 sm:mr-0">
               {!isLoggedIn ? (
                 <div className="flex ml-auto text-8 sm:text-14">
-                  {pathname !== '/signin' && (
                     <div className="ml-16">
-                      <Link href="/signin" className="no-underline">
+                      <Link href={`${config.ACCOUNTS_APP_URL}/signin`} className="no-underline">
                         <Button
                           variant="outlined"
-                          onClick={() => {
-                            router.push('/signin');
-                          }}
                         >
                           Sign In
                         </Button>
                       </Link>
-                    </div>
-                  )}
-                  {pathname !== '/signup' && (
+                    </div>          
                     <div className="ml-8">
-                      <Link href="/signup" className="no-underline">
+                      <Link href={`${config.ACCOUNTS_APP_URL}/signup`} className="no-underline">
                         <Button
                           variant="outlined"
-                          onClick={() => {
-                            router.push('/signup');
-                          }}
                         >
                           Sign Up
                         </Button>
                       </Link>
-                    </div>
-                  )}
+                    </div> 
                 </div>
               ) : (
                 <div className="flex items-center ml-auto">

@@ -58,7 +58,12 @@ func NewRouter(
 	handler.POST("/chat/socket.io/*any", authenticate, chatServiceWebsocketProxy)
 
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{config.FontendURL, config.SwaggerEditorDomain, config.SwaggerUIDomain}
+	corsConfig.AllowOrigins = []string{
+		config.MarketplaceAppUrl,
+		config.AccountsAppURL,
+		config.SwaggerEditorDomain,
+		config.SwaggerUIDomain,
+	}
 	corsConfig.AllowCredentials = true
 
 	handler.Use(cors.New(corsConfig))
